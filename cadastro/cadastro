@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <link rel="stylesheet" href="../css/cadastro.css">
+</head>
+<body>
+<!-- Navbar -->
+<nav class="navbar">
+    <div class="navbar-container">
+      <a href="#" class="logo">UniRide</a>
+      <ul class="nav-menu">
+        <li><a href="../home/index.html">HOME</a></li>
+        <li><a href="../login/login.html">LOGIN</a></li>
+      </ul>
+    </div>
+  </nav>
+
+  <!--CADASTRO-->
+    <h1>Área de Cadastro</h1>
+
+    <div>
+        <div>
+            <label for="nome">Nome: </label>
+            <input type="text" id="nome" name="nome">
+        </div>
+
+        <div>
+            <label for="email">Email institucional: </label>
+            <input type="email" id="email" name="email">
+        </div>
+
+        <div>
+            <label for="senha">Senha: </label>
+            <input type="password" id="senha" name="senha">
+        </div>
+        
+        <div>
+            <label for="nascimento">Data de nascimento: </label>
+            <input type="date" id="nascimento" name="nascimento">
+        </div>
+
+        <div>
+            <label for="motorista">Deseja ser motorista? </label>
+            <input type="checkbox" id="motorista" name="motorista">
+        </div>
+
+        <div id="formMotorista" style='display: none;'>
+            <h3> Digite as informações da sua CNH: </h3>
+            <p> Aviso: permitimos apenas caronas realizadas por CARRO, portanto sua carteira de motorista deve incluir categoria: B </p>
+
+            <div>
+                <label for="dataVencimento">Data de vencimento:</label>
+                <input type="date" id="dataVencimento" name="dataVencimento">
+            </div>
+
+            <div>
+                <label for="numeroRegistro">Número de registro:</label>
+                <input type="text" id="numeroRegistro" name="numeroRegistro">
+            </div>
+
+            <div>
+                <label for="cpf">CPF do condutor:</label>
+                <input type="text" id="cpf" name="cpf">
+            </div>
+        </div>
+
+        <div>
+            <p id="erro" style="display: none;">*Preencha todos os campos.</p>
+        </div>
+
+
+        <div>
+            <button type="button" id="enviar">Cadastrar</button>        
+        </div>
+    </div>
+    <script src="../javascript/cadastro.js"></script>
+</body>
+</html>
