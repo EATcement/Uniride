@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="../../css/nova-viagem.css">
+    <title>Cadastro de Viagem</title>
+</head>
+<body>
+<!-- Navbar -->
+     <nav>
+    <div class="navbar-container">
+      <a href="#" class="logo">UniRide</a>
+      <ul class="nav-menu">
+        <li><a href="../../perfilUsuario/html/perfil.html">Perfil de usuário</a></li>
+        <li><a href="index.html">Voltar</a></li>
+      </ul>
+    </div>
+  </nav>
+
+  <!--Formulário de Cadastro de Viagem-->
+    <div>
+        <div>
+            <label for="titulo">Titulo: </label>
+            <input type="text" id="titulo" name="titulo">
+        </div>
+
+        <div>
+            <label for="descricao">Descrição: </label>
+            <input type="text" id="descricao" name="descricao">
+        </div>
+
+        <div>
+            <label for="pontoPartida">Endereço de partida: </label>
+            <input type="text" id="pontoPartida" name="pontoPartida">
+        </div>
+
+        <div>
+            <label for="pontoChegada">Endereço de chegada (Universidade): </label>
+            <input type="text" id="pontoChegada" name="pontoChegada">
+        </div>
+
+        <div>
+            <label for="dataHora">Data e hora: </label>
+            <input type="datetime-local" id="dataHora" name="dataHora">
+        </div>
+
+        
+        <div id="OpMotorista" style='display: none;'>
+            <label for="tipoCarona">Você é motorista ou passageiro?</label>
+            <select name="tipoCarona" id="tipoCarona"> 
+                <option value="passageiro">Passageiro</option>
+                <option value="motorista">Motorista</option>
+            </select>
+        </div>
+            
+        <div id="OpPreco" style='display: none;'>
+            <label for="preco">Preço total da viagem: </label>
+            <input type="number" id="preco" name="preco">
+            <p> *Esse preço será dividido igualmente entre o motorista e os passageiros</p>
+        </div>
+
+        <div>
+            <button type="button" id="enviar">Cadastrar viagem</button>
+        </div>
+
+    </div>
+    
+    <script src="../javascript/novaViagem.js"></script>
+
+</body>
+</html>

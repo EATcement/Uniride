@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="../../css/index-viagem.css">
+    <title>Lista de viagens</title>
+</head>
+<body>
+    <nav>
+    <div class="navbar-container">
+      <a href="#" class="logo">UniRide</a>
+      <ul class="nav-menu">
+        <li><a href="../../perfilUsuario/html/perfil.html">Perfil de usuário</a></li>
+        <li><a href="../../php/logout.php">Logout</a></li>
+      </ul>
+    </div>
+  </nav>
+
+    <div>
+        <h3>Bem vindo ao Uniride!</h3>
+
+        <p>Aqui estão as caronas disponíveis!</p>
+
+        <section class="container">
+            <input type="text" id="buscarCarona" placeholder="Ex: Rua Imaculada da Conceição...">
+        </section>
+
+        <br>
+
+        <button id="novaViagem" class="button">Adicionar viagem</button>
+
+        <div class="conteudo-tabela">
+            <div id="lista"></div> 
+        </div>
+
+    </div>
+        <script src="../javascript/getViagem.js"></script>
+        <script src="../../javascript/logout.js"></script>
+
+</body>
+</html>
