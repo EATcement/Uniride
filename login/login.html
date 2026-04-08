@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="../css/login.css">
+    <title>Login</title>
+</head>
+<body>
+<!-- Navbar -->
+<nav class="navbar">
+    <div class="navbar-container">
+      <a href="#" class="logo">UniRide</a>
+      <ul class="nav-menu">
+        <li><a href="../home/index.html">HOME</a></li>
+        <li><a href="../cadastro/cadastro.html">CADASTRO</a></li>
+      </ul>
+    </div>
+  </nav>
+
+  <!-- Login Form -->
+    <div id="etapa-login">
+        <h1>Área de Login</h1>
+        <div>
+            <label for="email">Digite email: </label>
+            <input type="text" id="email" name="email" placeholder="seuemail@gmail.com">
+        </div>
+
+        <div>
+            <label for="senha">Digite sua senha: </label>
+            <input type="password" id="senha" name="senha">
+        </div>
+
+        <div>
+            <button type="button" id="enviar">Login</button>        
+        </div>
+    </div>
+
+    <div id="etapa-codigo" style="display: none;">
+        <a href="https://outlook.live.com">Verificar Email</a>
+    </div>
+    <script type="module" src="../javascript/login.js"></script>
+    
+</body>
+</html>
