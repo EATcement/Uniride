@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="../../css/perfil.css">
+    <title>Document</title>
+</head>
+<body>
+    <nav>
+    <div class="navbar-container">
+      <a href="#" class="logo">UniRide</a>
+      <ul class="nav-menu">
+        <li><a href="../../viagens/html/index.html">Caronas</a></li>
+        <li><a href="../../php/logout.php">Logout</a></li>
+      </ul>
+    </div>
+  </nav>
+
+    <div id="perfil">
+        <p>Seja bem vindo!</p>
+    </div>
+
+    <hr>
+
+    <div id="areaViagens">
+        <div>
+            <h3>Viagens cadastradas:</h3>
+            
+            <div class="conteudo-tabela-viagens">
+                <div id="listaViagem"></div> 
+            </div>
+        </div>
+        
+        <div id="areaCarros" style="display: none;">
+            <h3>Carros cadastrados:</h3>
+
+            <button id="novoCarro" class="button">Adicionar veiculo</button>
+
+            <div class="conteudo-tabela">
+                <div id="lista"></div> 
+            </div>
+        </div>
+    </div>
+    
+    <div id="areaTornarMotorista" style="display: none;">
+        <h3>Vire um Motorista:</h3>
+        <a href="tornarMotorista.html" class="button">Se tornar motorista</a>
+    </div>
+  
+    <script src="../javascript/perfilCarro.js"></script>
+    <script src="../javascript/perfilViagem.js"></script>
+    <script src="../javascript/perfilTornarMotorista.js"></script>
+</body>
+</html>

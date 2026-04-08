@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <title>Tornar-se Motorista</title>
+    <link rel="stylesheet" href="../../css/motorista.css">
+</head>
+<body>
+    <nav>
+    <div class="navbar-container">
+      <a href="#" class="logo">UniRide</a>
+      <ul class="nav-menu">
+        <li><a href="../../viagens/html/index-viagem.html">Voltar</a></li>
+      </ul>
+    </div>
+    </nav>
+
+        <div id="formMotorista">
+            <h3> Digite as informações da sua CNH: </h3>
+            <p> Aviso: permitimos apenas caronas realizadas por CARRO, portanto sua carteira de motorista deve incluir categoria: B </p>
+
+            <div>
+                <label for="dataVencimento">Data de vencimento:</label>
+                <input type="date" id="dataVencimento" name="dataVencimento">
+            </div>
+
+            <div>
+                <label for="numeroRegistro">Número de registro:</label>
+                <input type="text" id="numeroRegistro" name="numeroRegistro">
+            </div>
+
+            <div>
+                <label for="cpf">CPF do condutor:</label>
+                <input type="text" id="cpf" name="cpf">
+            </div>
+        </div>
+
+        <div>
+            <button type="button" id="enviar">Cadastrar</button>        
+        </div>
+
+    <script src="../javascript/tornarMotorista.js"></script>
+</body>
+</html>
