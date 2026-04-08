@@ -1,0 +1,195 @@
+/* ----- base ----- */
+*,
+*::before,
+*::after {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+:root {
+  /* cores */
+  --color-primary-dark: #2b2c44;
+  --color-secondary-gray: #8d99ae;
+  --color-background: #1a1b2e; 
+  --color-accent-red: #ef233e;
+  --color-accent-red-dark: #d70232;
+  --color-white: #eef2f5;
+  
+  /* fonte */
+  --font-family: 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+  
+  /* espaço */
+  --spacing-sm: 1rem;
+  --spacing-md: 1.5rem;
+  --spacing-lg: 2rem;
+  --spacing-xl: 3rem;
+  --spacing-2xl: 4rem;
+  
+  /* sombras */
+  --border-radius: 0.75rem;
+  --border-radius-lg: 1rem;
+  --shadow-md: 0 4px 12px rgba(0, 0, 0, 0.3);
+  --transition: all 0.3s ease;
+}
+
+html {
+  scroll-behavior: smooth;
+}
+
+body {
+  font-family: var(--font-family);
+  background-color: var(--color-background);
+  color: var(--color-white);
+  line-height: 1.6;
+  overflow-x: hidden;
+}
+
+/* nav */
+
+.navbar {
+  position: fixed;
+  top: 0;
+  width: 100%;
+  z-index: 1000;
+  background-color: var(--color-primary-dark);
+  box-shadow: var(--shadow-md);
+}
+
+.navbar-container {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 1rem 2rem;
+}
+
+.logo {
+  font-size: 1.5rem;
+  font-weight: 700;
+  color: var(--color-white);
+  text-decoration: none;
+}
+
+.nav-menu {
+  display: flex;
+  gap: 1.5rem;
+  list-style: none;
+}
+
+.nav-menu a {
+  color: var(--color-white);
+  text-decoration: none;
+  font-weight: 600;
+  transition: var(--transition);
+  padding: 0.5rem 1rem;
+  border-radius: 50px;
+}
+
+.nav-menu a:hover {
+  background-color: var(--color-accent-red);
+}
+
+/* botaooo */
+.menu-toggle {
+  display: none;
+  flex-direction: column;
+  gap: 5px;
+  background: none;
+  border: none;
+  cursor: pointer;
+}
+
+.menu-toggle span {
+  width: 30px;
+  height: 3px;
+  background-color: var(--color-white);
+  border-radius: 2px;
+}
+
+/* hero */
+
+.hero {
+  height: 80vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  background: linear-gradient(rgba(43, 44, 68, 0.8), rgba(43, 44, 68, 0.8)), 
+              url('https://midia-wp-kinsta-grupomarista.s3.sa-east-1.amazonaws.com/grupo-marista-2022/wp-content/uploads/2024/11/13122634/imagens-para-o-blog-2048x1152.png');
+  background-size: cover;
+  background-position: center;
+  padding: 0 1rem;
+  margin-top: 60px; 
+}
+
+.hero-content h1 {
+  font-size: clamp(2rem, 5vw, 3.5rem);
+  margin-bottom: 1rem;
+}
+
+.hero-content p {
+  font-size: 1.2rem;
+  margin-bottom: 2rem;
+  max-width: 600px;
+  margin-left: auto;
+  margin-right: auto;
+}
+
+.btn {
+  display: inline-block;
+  background-color: var(--color-accent-red);
+  color: white;
+  padding: 1rem 2rem;
+  border-radius: var(--border-radius);
+  text-decoration: none;
+  font-weight: bold;
+  transition: var(--transition);
+}
+
+.btn:hover {
+  background-color: var(--color-accent-red-dark);
+  transform: translateY(-3px);
+}
+
+/* about secao */
+
+.about {
+  padding: var(--spacing-2xl) 1rem;
+  max-width: 1200px;
+  margin: 0 auto;
+}
+
+.about-container {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 3rem;
+  align-items: center;
+}
+
+.about-text h2 {
+  font-size: 2.5rem;
+  margin-bottom: 1.5rem;
+  color: var(--color-accent-red);
+}
+
+.about-text p {
+  color: var(--color-secondary-gray);
+  font-size: 1.1rem;
+}
+
+.about-image img {
+  width: 100%;
+  border-radius: var(--border-radius-lg);
+  box-shadow: var(--shadow-md);
+}
+
+/* footer e tals */
+
+.footer {
+  background-color: var(--color-primary-dark);
+  text-align: center;
+  padding: 2rem;
+  margin-top: 4rem;
+}
