@@ -59,6 +59,8 @@ async function carregarDados() {
 
     } else {
         console.log("Erro: " + resposta.mensagem);
+        document.getElementById("SemCarrosCadastrados").innerHTML = "Nenhum carro cadastrado no momento.";
+
     }
 };
 

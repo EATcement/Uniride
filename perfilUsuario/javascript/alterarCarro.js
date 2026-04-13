@@ -50,6 +50,11 @@ async function alterar() {
     var gastoCombustivel = document.getElementById("gastoCombustivel").value;
     var categoria = document.getElementById("categoria").value;
 
+    // validação básica
+    if (!placa || !marca || !modelo || !ano || !cor || !capacidade) {
+        alert("ERRO: Por favor, preencha todos os campos obrigatórios.");
+        return;
+    }
 
     const fd = new FormData();
     fd.append('placa', placa);

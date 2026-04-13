@@ -73,6 +73,11 @@ async function alterar() {
     var preco = 0; // começa como 0
     var tipoCarona = document.getElementById("tipoCarona").value || "passageiro"; // Pega o valor do tipoCarona ou "passageiro" se estiver vazio;
 
+    if (!dataHora || !titulo || !descricao || !pontoPartida || !pontoChegada) {
+        alert("ERRO: Por favor, preencha todos os campos obrigatórios.");
+        return;
+    }
+    
     if (tipoCarona == "motorista") {
         preco = document.getElementById("preco").value || 0;
     }

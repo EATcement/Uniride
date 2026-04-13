@@ -26,6 +26,12 @@ async function carregarDados() {
             objeto.pontoPartida.toLowerCase().includes(filtro) ||
             objeto.pontoChegada.toLowerCase().includes(filtro)
         );
+        
+        if (registros == "" || registros == null) {
+            document.getElementById("semCaronasDisponiveis").innerHTML = "Nenhuma carona disponível para o local pesquisado.";
+        } else {
+            document.getElementById("semCaronasDisponiveis").innerHTML = "";
+        }
 
         var html = `<table>
         <tr>
