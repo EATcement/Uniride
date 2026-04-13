@@ -73,9 +73,9 @@ async function novo() {
 
         /*
         if (cpf.length === 11 && !isNaN(cpf)) {
-            console.log("Valido: 8 dígitos numéricos.");
+            console.log("Valido: 11 dígitos numéricos.");
         } else {
-            alert("Invalido: Precisa ter exatamente 8 dígitos numéricos.");
+            alert("Invalido: Precisa ter exatamente 11 dígitos numéricos.");
             return;
         }
         */
