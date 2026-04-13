@@ -52,14 +52,13 @@ async function novo() {
     fd.append('motorista', motorista);
 
 
-    const retorno = await fetch("../php/cadastro.php", {
-        method: "POST",
-        body: fd
-    }); 
-
-    const resposta = await retorno.json();
-
     if (motorista ==  0) {
+        const retorno = await fetch("../php/cadastro.php", {
+            method: "POST",
+            body: fd
+        }); 
+
+        const resposta = await retorno.json();
         if(resposta.status == "ok") {
             alert("Sucesso! " + resposta.mensagem);
             window.location.href="../home/index.html";
@@ -72,10 +71,26 @@ async function novo() {
         var numeroRegistro = document.getElementById("numeroRegistro").value;
         var cpf = document.getElementById("cpf").value;
 
+        /*
+        if (cpf.length === 11 && !isNaN(cpf)) {
+            console.log("Valido: 8 dígitos numéricos.");
+        } else {
+            alert("Invalido: Precisa ter exatamente 8 dígitos numéricos.");
+            return;
+        }
+        */
+
         if (!dataVencimento || !numeroRegistro || !cpf){
             mostrarErro();
             return;
         }
+        const retorno = await fetch("../php/cadastro.php", {
+            method: "POST",
+            body: fd
+        });
+
+        const resposta = await retorno.json();
+        console.log("cadastrado")
 
         const fdMotorista = new FormData();
         fdMotorista.append('dataVencimento', dataVencimento);
@@ -93,6 +108,7 @@ async function novo() {
             alert("Sucesso! redirecionando você para a página inicial.");
             window.location.href="../home/index.html";        
         } else {
+
             alert(resposta.mensagem + "/" + respostaMotorista.mensagem);
         }
     }
