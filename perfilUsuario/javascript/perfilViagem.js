@@ -49,6 +49,7 @@ async function carregarDadosViagem() {
 
     } else {
         console.log("Erro: " + resposta.mensagem);
+        document.getElementById("SemViagensCadastradas").innerHTML = "Nenhuma viagem cadastrada no momento.";
     }
 };
 
