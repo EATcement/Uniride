@@ -78,7 +78,7 @@ nav {
   transition: var(--transition);
 }
 
-.nav-menu li a::before {
+/*.nav-menu li a::before {
   content: "";
   width: 30px;
   height: 30px;
@@ -87,6 +87,7 @@ nav {
   display: inline-block;
   flex-shrink: 0;
 }
+*/
 
 .nav-menu li a:hover {
   background-color: var(--color-accent-red);
@@ -96,6 +97,7 @@ nav {
 .nav-menu li a:hover::before {
   background-color: white;
 }
+
 
 body > div {
   background: rgba(43, 44, 68, 0.4);

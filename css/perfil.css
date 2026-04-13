@@ -57,23 +57,45 @@ nav {
   font-weight: 700;
   color: var(--color-white);
   text-decoration: none;
+  letter-spacing: -0.02em;
 }
 
 .nav-menu {
+  display: flex;
+  align-items: center;
   list-style: none;
 }
 
-.nav-menu a {
+.nav-menu li a {
+  display: flex;
+  align-items: center;
+  gap: 12px;
   color: var(--color-white);
   text-decoration: none;
   font-weight: 600;
-  padding: 0.5rem 1.2rem;
+  font-size: 0.9rem;
+  padding: 0.6rem 1.2rem;
   border-radius: 50px;
   transition: var(--transition);
 }
 
-.nav-menu a:hover {
+/*.nav-menu li a::before {
+  content: "";
+  width: 30px;
+  height: 30px;
+  background-color: var(--color-secondary-gray);
+  border-radius: 50%;
+  display: inline-block;
+  flex-shrink: 0;
+}*/
+
+.nav-menu li a:hover {
   background-color: var(--color-accent-red);
+  color: white;
+}
+
+.nav-menu li a:hover::before {
+  background-color: white;
 }
 
 /* cards */
