@@ -10,26 +10,15 @@ async function novo() {
     var nascimento = document.getElementById("nascimento").value;
     var motorista = document.getElementById("motorista").checked ? 1 : 0 
 
-
-    if (!email.endsWith(".edu.br")) {
-        alert("Use seu email institucional!");
+    if (!email.endsWith(".edu.br") || !email.includes("@")){
+        alert("Use seu email institucional!")
         return;
-    };
+    }
 
     if (!email || !senha || !nome || !nascimento){
         mostrarErro();
         return;
     };
-
-    /*
-    if (email.includes("@")){
-        console.log("Tem @")
-    }else{
-        const erro = document.getElementById("erro");
-        erro.style.display = "block";
-        alert("Não tem @")
-       return;
-    }*/
 
     const fd = new FormData();
     fd.append('email', email);
