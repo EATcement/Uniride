@@ -71,14 +71,10 @@ async function novo() {
         var numeroRegistro = document.getElementById("numeroRegistro").value;
         var cpf = document.getElementById("cpf").value;
 
-        /*
-        if (cpf.length === 11 && !isNaN(cpf)) {
-            console.log("Valido: 11 dígitos numéricos.");
-        } else {
-            alert("Invalido: Precisa ter exatamente 11 dígitos numéricos.");
+        if (!validarCpf(cpf)){
+            alert("CPF inválido");
             return;
         }
-        */
 
         if (!dataVencimento || !numeroRegistro || !cpf){
             mostrarErro();
@@ -132,4 +128,18 @@ function mostrarFormMotorista() {
 function mostrarErro(){
     const erro = document.getElementById("erro");
     erro.style.display = "block";
+}
+
+function validarCpf(cpf){
+
+    for (let t = 9; t < 11; t++) {
+        let sum = 0;
+        for (let i = 0; i < t; i++) {
+            sum += parseInt(cpf[i]) * (t + 1 - i);
+        }
+        let digito = (sum * 10) % 11;
+        if (digito === 10) digito = 0;
+        if (digito !== parseInt(cpf[t])) return false;
+    }
+    return true;
 }
