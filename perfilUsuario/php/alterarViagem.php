@@ -39,7 +39,7 @@ if (isset($_GET['id'])) {
     } else {
         $retorno = [
             'status' => 'nok', //ok ou nok
-            'mensagem' => 'Não foi possível alterar o registro', // mensagem de sucesso ou erro
+            'mensagem' => 'Nenhuma alteração de dados detectada.', // mensagem de sucesso ou erro
             'data' => [] // efetivamente o retorno
         ]; 
     }
