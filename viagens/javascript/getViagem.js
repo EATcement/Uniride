@@ -46,8 +46,7 @@ async function carregarDados() {
             html += 
                 `<div class="card">
                     
-                    <strong>Título:</strong>
-                    <p>${objeto.titulo}</p>
+                    <h3>${objeto.titulo}</h3>
 
                     <strong>Descrição</strong>
                     <p>${objeto.descricao}</p>
