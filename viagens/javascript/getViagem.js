@@ -33,32 +33,43 @@ async function carregarDados() {
             document.getElementById("semCaronasDisponiveis").innerHTML = "";
         }
 
-        var html = `<table>
-        <tr>
-            <th>Título</th>
-            <th>Descrição</th>
-            <th>Ponto de Partida</th>
-            <th>Ponto de Chegada</th>
-            <th>Data e Hora</th>
-            <th>Preço</th>
-            <th>Tipo de carona</th>
-        </tr>`;
+        html = "";
 
         for (var i = 0; i < registros.length; i++) {
-            var objeto = registros[i]
+            var objeto = registros[i];
+            
+            if (!objeto) continue;
 
-            html += `<tr>
-                        <td>${objeto.titulo}</td>
-                        <td>${objeto.descricao}</td>
-                        <td>${objeto.pontoPartida}</td>
-                        <td>${objeto.pontoChegada}</td>
-                        <td>${objeto.dataHora}</td>
-                        <td>${objeto.preco}</td>
-                        <td>${objeto.tipoCarona}</td>
+            var tipoLabel = objeto.tipoCarona === "passageiro" ? "Solicitação" : "Oferta";
 
-                    </tr>`;
+
+            html += 
+                `<div class="card">
+                    
+                    <strong>Título:</strong>
+                    <p>${objeto.titulo}</p>
+
+                    <strong>Descrição</strong>
+                    <p>${objeto.descricao}</p>
+
+                    <strong>Ponto de Partida</strong>
+                    <p>${objeto.pontoPartida}</p>
+
+                    <strong>Ponto de Chegada</strong>
+                    <p>${objeto.pontoChegada}</p>
+
+                    <strong>Data e Hora</strong>
+                    <p>${objeto.dataHora}</p>
+
+                    <strong>Preço</strong>
+                    <p>${objeto.preco}</p>
+
+                    <strong>Tipo de carona</strong>
+                    <p>${tipoLabel}</p>
+
+                </div>
+                `;
         }
-        html += "</table>"
 
         document.getElementById("lista").innerHTML = html;
 

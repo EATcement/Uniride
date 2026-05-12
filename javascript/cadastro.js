@@ -1,3 +1,16 @@
+const campos = [
+    { id: "nome",       erro: "erroNome",       msg: "*Informe seu nome." },
+    { id: "email",      erro: "erroEmail",       msg: "*Informe seu email." },
+    { id: "senha",      erro: "erroSenha",       msg: "*Informe sua senha." },
+    { id: "nascimento", erro: "erroNascimento",  msg: "*Informe sua data de nascimento." },
+];
+
+const camposMotorista = [
+    {id: "dataVencimento",  erro: "erroDataVencimento",     msg: "*Informe a data de vencimento." },
+    {id: "numeroRegistro",  erro: "erroNumeroRegistro",         msg: "*Informe o número de registro da sua CNH." },
+    {id: "cpf",             erro: "erroCpf",                    msg: "*Informe o seu cpf." },
+];
+
 document.getElementById("enviar").addEventListener('click', function () {
     event.preventDefault();
     novo();
@@ -10,15 +23,20 @@ async function novo() {
     var nascimento = document.getElementById("nascimento").value;
     var motorista = document.getElementById("motorista").checked ? 1 : 0 
 
+    if (!validarCampos()) {
+        if (motorista == 1) {
+            if (!validarCamposMotorista()) 
+                return;
+        } else {
+            return;
+        }
+    }
+
+    
     if (!email.endsWith(".edu.br") || !email.includes("@")){
         alert("Use seu email institucional!")
         return;
     }
-
-    if (!email || !senha || !nome || !nascimento){
-        mostrarErro();
-        return;
-    };
 
     const fd = new FormData();
     fd.append('email', email);
@@ -65,10 +83,6 @@ async function novo() {
             return;
         }
 
-        if (!dataVencimento || !numeroRegistro || !cpf){
-            mostrarErro();
-            return;
-        }
         const retorno = await fetch("../php/cadastro.php", {
             method: "POST",
             body: fd
@@ -114,11 +128,6 @@ function mostrarFormMotorista() {
 
 };
 
-function mostrarErro(){
-    const erro = document.getElementById("erro");
-    erro.style.display = "block";
-}
-
 function validarCpf(cpf){
 
     for (let t = 9; t < 11; t++) {
@@ -131,4 +140,44 @@ function validarCpf(cpf){
         if (digito !== parseInt(cpf[t])) return false;
     }
     return true;
+}
+
+function validarCampos() {
+    let valido = true;
+
+    for (const campo of campos) {
+        const valor = document.getElementById(campo.id).value.trim();
+        const erroEl = document.getElementById(campo.erro);
+
+        if (!valor) {
+            erroEl.textContent = campo.msg;
+            erroEl.style.display = "block";
+            valido = false;
+        } else {
+            erroEl.style.display = "none";
+        }
+    }
+
+    return valido;
+}
+
+function validarCamposMotorista() {
+    console.log("validarCamposMotorista chamada!");
+
+    let valido = true;
+
+    for (const campo of camposMotorista) {
+        const valor = document.getElementById(campo.id).value.trim();
+        const erroEl = document.getElementById(campo.erro);
+    
+        if (!valor) {
+            erroEl.textContent = campo.msg;
+            erroEl.style.display = "block";
+            valido = false;
+        } else {
+                erroEl.style.display = "none";
+            }
+    }
+
+    return valido;
 }
