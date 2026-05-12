@@ -1,12 +1,22 @@
 document.addEventListener("DOMContentLoaded", () => {
-    //valida_sessao();
-    
+    carregarPerfil(); // adicione esta linha
+
     if (document.getElementById("lista")) {
         carregarDados();
         document.getElementById("buscarCarona").addEventListener("input", carregarDados);
-
     }
 });
+
+async function carregarPerfil() {
+    const retorno = await fetch("../../php/getPerfil.php");
+    const resposta = await retorno.json();
+
+    if (resposta.status === "ok") {
+        const usuario = resposta.data;
+        document.getElementById("boasVindas").innerHTML = 
+            `Bem vindo ao Uniride, <strong>${usuario.nome}</strong>!`;
+    }
+}
 
 const botaoNovo = document.getElementById("novaViagem");
 if (botaoNovo) {
