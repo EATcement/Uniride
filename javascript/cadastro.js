@@ -34,7 +34,13 @@ async function novo() {
 
     
     if (!email.endsWith(".edu.br") || !email.includes("@")){
-        alert("Use seu email institucional!")
+        Swal.fire({
+            title: "Aviso!",
+            text: "Use seu email institucional!",
+            icon: "warning",
+            confirmButtonText: "OK",
+            confirmButtonColor: "#ff2448"
+        });
         return;
     }
 
@@ -49,7 +55,13 @@ async function novo() {
     const respostaEmail = await retornoEmail.json();
     
     if (respostaEmail.status == "ok"){
-        alert("Email já cadastrado!");
+        Swal.fire({
+            title: "Aviso!",
+            text: "Email já cadastrado!",
+            icon: "warning",
+            confirmButtonText: "OK",
+            confirmButtonColor: "#ff2448"
+        });
         return;
     };
 
@@ -67,10 +79,22 @@ async function novo() {
 
         const resposta = await retorno.json();
         if(resposta.status == "ok") {
-            alert("Sucesso! " + resposta.mensagem);
+            await Swal.fire({
+                title: "Sucesso!",
+                text: resposta.mensagem,
+                icon: "success",
+                confirmButtonText: "OK",
+                confirmButtonColor: "#ff2448"
+            });
             window.location.href="../home/index.html";
         } else {
-            alert("ERRO! " + resposta.mensagem);
+            Swal.fire({
+                title: "ERRO!",
+                text: resposta.mensagem,
+                icon: "error",
+                confirmButtonText: "OK",
+                confirmButtonColor: "#ff2448"
+            });
         }
 
     } else {
@@ -79,7 +103,13 @@ async function novo() {
         var cpf = document.getElementById("cpf").value;
 
         if (!validarCpf(cpf)){
-            alert("CPF inválido");
+            Swal.fire({
+                title: "CPF inválido!",
+                text: "CPF inválido",
+                icon: "error",
+                confirmButtonText: "OK",
+                confirmButtonColor: "#ff2448"
+            });
             return;
         }
 
@@ -104,11 +134,23 @@ async function novo() {
         const respostaMotorista = await retornoMotorista.json();
 
         if(respostaMotorista.status == "ok" && resposta.status == "ok") {
-            alert("Sucesso! redirecionando você para a página inicial.");
+            await Swal.fire({
+                title: "Sucesso!",
+                text: "Redirecionando você para a página inicial.",
+                icon: "success",
+                confirmButtonText: "OK",
+                confirmButtonColor: "#ff2448"
+            });
             window.location.href="../home/index.html";        
         } else {
 
-            alert(resposta.mensagem + "/" + respostaMotorista.mensagem);
+            Swal.fire({
+                title: "Erro!",
+                text: resposta.mensagem + "/" + respostaMotorista.mensagem,
+                icon: "error",
+                confirmButtonText: "OK",
+                confirmButtonColor: "#ff2448"
+            });
         }
     }
 };

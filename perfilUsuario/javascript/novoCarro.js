@@ -35,10 +35,22 @@ async function novo() {
     const resposta = await retorno.json();
 
     if (resposta.status == "ok") {
-        alert("Sucesso! " + resposta.mensagem);
+        await Swal.fire({
+            title: "Sucesso!",
+            text: resposta.mensagem,
+            icon: "success",
+            confirmButtonText: "OK",
+            confirmButtonColor: "#ff2448"
+        });
         window.location.href = "../html/perfil.html";
     } else {
-        alert("ERRO! " + resposta.mensagem);
+        Swal.fire({
+            title: "ERRO!",
+            text: resposta.mensagem,
+            icon: "error",
+            confirmButtonText: "OK",
+            confirmButtonColor: "#ff2448"
+        });
     }
 }
 
@@ -68,7 +80,13 @@ function validarRenavam() {
 
     if (renavam.length !== 9 && renavam.length !== 11) {
         erroEl.style.display = "none";
-        alert("ERRO: RENAVAM inválido: deve conter 9 ou 11 dígitos.");
+        Swal.fire({
+            title: "ERRO!",
+            text: "RENAVAM inválido: deve conter 9 ou 11 dígitos.",
+            icon: "error",
+            confirmButtonText: "OK",
+            confirmButtonColor: "#ff2448"
+        });
         return false;
     }
 
@@ -87,7 +105,13 @@ function validarRenavam() {
 
     if (digitoVerificador !== digitoEsperado) {
         erroEl.style.display = "none";
-        alert("ERRO: RENAVAM inválido: dígito verificador incorreto.");
+        Swal.fire({
+            title: "ERRO!",
+            text: "RENAVAM inválido: dígito verificador incorreto.",
+            icon: "error",
+            confirmButtonText: "OK",
+            confirmButtonColor: "#ff2448"
+        });
         return false;
     }
 

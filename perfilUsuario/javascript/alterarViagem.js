@@ -17,7 +17,13 @@ async function buscarDados(id) {
 
     if(resposta.status == "ok") {
         
-        alert("Sucesso! " + resposta.mensagem);
+        Swal.fire({
+            title: "Sucesso!",
+            text: resposta.mensagem,
+            icon: "success",
+            confirmButtonText: "OK",
+            confirmButtonColor: "#ff2448"
+        });
         var reg = resposta.data[0]; //pega a partir da posição 0, já que vai ser a única existente, já que o dicionário só possui uma posição;
 
         document.getElementById("titulo").value = reg.titulo;
@@ -30,7 +36,13 @@ async function buscarDados(id) {
         
 
     } else {
-        alert("ERRO! " + resposta.mensagem);
+        Swal.fire({
+            title: "ERRO!",
+            text: resposta.mensagem,
+            icon: "error",
+            confirmButtonText: "OK",
+            confirmButtonColor: "#ff2448"
+        });
     }
     console.log(id)
 };
@@ -74,7 +86,13 @@ async function alterar() {
     var tipoCarona = document.getElementById("tipoCarona").value || "passageiro"; // Pega o valor do tipoCarona ou "passageiro" se estiver vazio;
 
     if (!dataHora || !titulo || !descricao || !pontoPartida || !pontoChegada) {
-        alert("ERRO: Por favor, preencha todos os campos obrigatórios.");
+        Swal.fire({
+            title: "ERRO!",
+            text: "Por favor, preencha todos os campos obrigatórios.",
+            icon: "error",
+            confirmButtonText: "OK",
+            confirmButtonColor: "#ff2448"
+        });
         return;
     }
     
@@ -102,10 +120,22 @@ async function alterar() {
     const resposta = await retorno.json();
 
     if(resposta.status == "ok") {
-        alert("Sucesso! " + resposta.mensagem);
+        await Swal.fire({
+            title: "Sucesso!",
+            text: resposta.mensagem,
+            icon: "success",
+            confirmButtonText: "OK",
+            confirmButtonColor: "#ff2448"
+        });
         window.location.href = '../html/perfil.html';
     } else {
-        alert("ERRO! " + resposta.mensagem);
+        Swal.fire({
+            title: "ERRO!",
+            text: resposta.mensagem,
+            icon: "error",
+            confirmButtonText: "OK",
+            confirmButtonColor: "#ff2448"
+        });
     }
 
 };

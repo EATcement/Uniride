@@ -18,6 +18,12 @@ async function login(){
     if(resposta.status == "ok"){
         window.location.href="../viagens/html/index.html";
       }else{
-        alert("Credenciais invalidas.");
+        Swal.fire({
+            title: "Erro!",
+            text: "Credenciais invalidas.",
+            icon: "error",
+            confirmButtonText: "OK",
+            confirmButtonColor: "#ff2448"
+        });
     }
 };

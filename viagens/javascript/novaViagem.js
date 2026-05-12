@@ -63,10 +63,22 @@ async function novo() {
     const resposta = await retorno.json();
 
     if (resposta.status == "ok") {
-        alert("Sucesso! " + resposta.mensagem);
+        await Swal.fire({
+            title: "Sucesso!",
+            text: resposta.mensagem,
+            icon: "success",
+            confirmButtonText: "OK",
+            confirmButtonColor: "#ff2448"
+        });
         window.location.href = "../html/index.html";
     } else {
-        alert("ERRO! " + resposta.mensagem);
+        Swal.fire({
+            title: "ERRO!",
+            text: resposta.mensagem,
+            icon: "error",
+            confirmButtonText: "OK",
+            confirmButtonColor: "#ff2448"
+        });
     }
 }
 

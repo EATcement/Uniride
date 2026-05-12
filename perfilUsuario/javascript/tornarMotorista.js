@@ -18,10 +18,22 @@ document.addEventListener('DOMContentLoaded', () => {
         const resposta = await retorno.json();
 
         if (resposta.status == "ok") {
-            alert("Sucesso! " + resposta.mensagem);
+            await Swal.fire({
+                title: "Sucesso!",
+                text: resposta.mensagem,
+                icon: "success",
+                confirmButtonText: "OK",
+                confirmButtonColor: "#ff2448"
+            });
             window.location.href = "perfil.html";
         } else {
-            alert("ERRO! " + resposta.mensagem);
+            Swal.fire({
+                title: "ERRO!",
+                text: resposta.mensagem,
+                icon: "error",
+                confirmButtonText: "OK",
+                confirmButtonColor: "#ff2448"
+            });
         }
     });
 });
@@ -50,7 +62,13 @@ function validarCpf() {
     const cpf    = document.getElementById("cpf").value.trim().replace(/\D/g, "");
 
     if (cpf.length !== 11) {
-        alert("ERRO: CPF inválido: deve conter 11 dígitos.");
+        Swal.fire({
+            title: "ERRO!",
+            text: "CPF inválido: deve conter 11 dígitos.",
+            icon: "error",
+            confirmButtonText: "OK",
+            confirmButtonColor: "#ff2448"
+        });
         return false;
     }
 
@@ -62,7 +80,13 @@ function validarCpf() {
         let digito = (sum * 10) % 11;
         if (digito === 10) digito = 0;
         if (digito !== parseInt(cpf[t])) {
-            alert("ERRO: CPF inválido: dígito verificador incorreto.");
+            Swal.fire({
+                title: "ERRO!",
+                text: "CPF inválido: dígito verificador incorreto.",
+                icon: "error",
+                confirmButtonText: "OK",
+                confirmButtonColor: "#ff2448"
+            });
             return false;
         }
     }
