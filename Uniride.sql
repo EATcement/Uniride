@@ -50,3 +50,17 @@ CREATE TABLE veiculo (
 
     FOREIGN KEY (usuario_id) REFERENCES usuario(id_usuario)
 );
+
+CREATE TABLE solicitacao_viagem (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    viagem_id INT NOT NULL,
+    passageiro_id INT NOT NULL,
+    status ENUM('pendente', 'aceito', 'recusado') DEFAULT 'pendente',
+    data_solicitacao TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+
+    FOREIGN KEY (viagem_id) REFERENCES viagem(id) ON DELETE CASCADE,
+    FOREIGN KEY (passageiro_id) REFERENCES usuario(id_usuario) ON DELETE CASCADE
+);
+
+ALTER TABLE solicitacao_viagem 
+ADD COLUMN tipo_vaga ENUM('passageiro', 'motorista') DEFAULT 'passageiro';
