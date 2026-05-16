@@ -6,6 +6,16 @@ document.addEventListener("DOMContentLoaded", () => {
     }
 });
 
+const diasSemana = {
+    0: 'Domingo',
+    1: 'Segunda',
+    2: 'Terça',
+    3: 'Quarta',
+    4: 'Quinta',
+    5: 'Sexta',
+    6: 'Sábado'
+};
+
 async function carregarDadosViagem() {
     const retorno = await fetch("../php/perfilViagem.php");
     const resposta = await retorno.json();
@@ -23,10 +33,18 @@ async function carregarDadosViagem() {
             <th>Data e Hora</th>
             <th>Preço</th>
             <th>Tipo de carona</th>
+            <th>Recorrência</th>
         </tr>`;
 
         for (var i = 0; i < registros.length; i++) {
-            var objeto = registros[i]
+            var objeto = registros[i];
+
+            var recorrencia = '';
+            if (objeto.tipoRecorrencia === 'recorrente' && objeto.dia_semana !== null) {
+                recorrencia = `${diasSemana[objeto.dia_semana]} às ${objeto.hora_recorrencia} (a partir de ${objeto.data_inicio})`;
+            } else {
+                recorrencia = 'Avulsa';
+            }
 
             html += `<tr>
                         <td> 
@@ -37,13 +55,13 @@ async function carregarDadosViagem() {
                         <td>${objeto.descricao}</td>
                         <td>${objeto.pontoPartida}</td>
                         <td>${objeto.pontoChegada}</td>
-                        <td>${objeto.dataHora}</td>
+                        <td>${objeto.dataHora ?? '-'}</td>
                         <td>${objeto.preco}</td>
                         <td>${objeto.tipoCarona}</td>
-
+                        <td>${recorrencia}</td>
                     </tr>`;
         }
-        html += "</table>"
+        html += "</table>";
 
         document.getElementById("listaViagem").innerHTML = html;
 

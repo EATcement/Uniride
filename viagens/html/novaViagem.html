@@ -69,10 +69,46 @@
             <p id="textoOpPreco"> *Esse preço será dividido igualmente entre o motorista e os passageiros</p>
         </div>
 
+        <div>
+            <label for="tipoRecorrencia">Sua viagem será recorrente ou avulsa?</label>
+            <select name="tipoRecorrencia" id="tipoRecorrencia">
+                <option value="avulsa">Avulsa</option>
+                <option value="recorrente">Recorrente</option>
+            </select>
+        </div>
 
+        <div id="camposRecorrencia" style="display: none;">
+
+            <div>
+                <label for="camposRecorrencia">Selecione as informações abaixo referentes à recorrência da viagem:</label><br>
+                <label>Dias da semana:</label>
+                <input type="checkbox" name="dias[]" value="1"> Segunda<br>
+                <input type="checkbox" name="dias[]" value="2"> Terça<br>
+                <input type="checkbox" name="dias[]" value="3"> Quarta<br>
+                <input type="checkbox" name="dias[]" value="4"> Quinta<br>
+                <input type="checkbox" name="dias[]" value="5"> Sexta<br>
+                <input type="checkbox" name="dias[]" value="6"> Sábado<br>
+                <input type="checkbox" name="dias[]" value="0"> Domingo<br>
+                <p id="erroDias" style="display: none; color: var(--color-accent-red);"></p>
+
+            </div><br>
+            
+            <div>
+                <label>Horário:</label>
+                <input type="time" id="hora"><br>
+                <p id="erroHora" style="display: none; color: var(--color-accent-red);"></p>
+
+            </div><br>
+
+            <div>
+                <label>Data de início:</label>
+                <input type="date" id="data_inicio"><br>
+                <p id="erroDataInicio" style="display: none; color: var(--color-accent-red);"></p>
+            </div>
+        </div>
 
         <div>
-            <button type="button" id="enviar">Cadastrar viagem</button>
+            <button type="button" id="enviar">Cadastrar grupo de viagem</button>
         </div>
 
     </div>

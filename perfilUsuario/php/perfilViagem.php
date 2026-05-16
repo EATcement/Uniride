@@ -1,4 +1,3 @@
-
 <?php
     include_once('../../php/conexao.php');
 
@@ -6,7 +5,6 @@
         'status' => '',
         'mensagem' => '',
         'data' => []
-        
     ]; 
 
     session_start();
@@ -14,13 +12,22 @@
     $usuario_id = $usuario['id_usuario'];  
 
     if (isset($_GET['id'])) {
-        // Busca viagem específica (tela de edição)
         $id = $_GET['id'];
-        $stmt = $conexao->prepare("SELECT * FROM Viagem WHERE usuario_id = ? AND id = ?");
+        $stmt = $conexao->prepare("
+            SELECT gv.*, vr.id AS recorrencia_id, vr.dia_semana, vr.hora AS hora_recorrencia, vr.data_inicio
+            FROM grupo_viagem gv
+            LEFT JOIN viagem_recorrencia vr ON vr.viagem_id = gv.id
+            WHERE gv.usuario_id = ? AND gv.id = ?
+        ");
         $stmt->bind_param("ii", $usuario_id, $id);
     } else {
-        // Busca todas as viagens (tabela do perfil)
-        $stmt = $conexao->prepare("SELECT * FROM Viagem WHERE usuario_id = ?");
+        $stmt = $conexao->prepare("
+            SELECT gv.*, vr.id AS recorrencia_id, vr.dia_semana, vr.hora AS hora_recorrencia, vr.data_inicio
+            FROM grupo_viagem gv
+            LEFT JOIN viagem_recorrencia vr ON vr.viagem_id = gv.id
+            WHERE gv.usuario_id = ?
+            ORDER BY gv.id, vr.dia_semana
+        ");
         $stmt->bind_param("i", $usuario_id);
     }
     
@@ -28,8 +35,8 @@
     $resultado = $stmt->get_result();
 
     $tabela = [];
-    if($resultado->num_rows > 0){
-        while($linha = $resultado->fetch_assoc()){
+    if ($resultado->num_rows > 0) {
+        while ($linha = $resultado->fetch_assoc()) {
             $tabela[] = $linha;
         }
 
@@ -38,7 +45,6 @@
             'mensagem' => 'registros encontrados',
             'data' => $tabela
         ];
-        
     } else {
         $retorno = [
             'status' => 'nok',
@@ -50,7 +56,6 @@
     $stmt->close();
     $conexao->close();
 
-header("Content-type: application/json; charset:utf-8"); 
-echo json_encode($retorno); 
-
+    header("Content-type: application/json; charset=utf-8"); 
+    echo json_encode($retorno); 
 ?>
