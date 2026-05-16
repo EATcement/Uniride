@@ -76,7 +76,7 @@ nav {
 }
 
 /* form */
-body > div {
+body > div:not(.swal2-container) {
   background: rgba(43, 44, 68, 0.4);
   padding: 3rem;
   border-radius: var(--border-radius);
@@ -93,7 +93,7 @@ body > div {
 }
 
 /* titulo */
-body > div::before {
+body > div:not(.swal2-container)::before {
   content: "Cadastrar Veículo";
   width: 100%;
   font-size: 1.8rem;
@@ -102,7 +102,7 @@ body > div::before {
   margin-bottom: 1rem;
 }
 
-body > div > div {
+body > div:not(.swal2-container) > div {
   flex: 1 1 calc(33.333% - 1rem);
   min-width: 250px; 
   display: flex;
@@ -110,7 +110,7 @@ body > div > div {
 }
 
 /* div botao */
-body > div > div:last-child {
+body > div:not(.swal2-container) > div:last-child {
   flex: 1 1 100%;
   margin-top: 1.5rem;
   align-items: center; /* Centraliza o botão */
@@ -165,5 +165,3 @@ button#enviar:hover {
   transform: translateY(-2px);
   box-shadow: 0 10px 20px rgba(239, 35, 62, 0.3);
 }
-
-

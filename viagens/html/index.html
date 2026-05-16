@@ -4,7 +4,6 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="stylesheet" href="../../css/index-viagem.css">
-    <link rel="stylesheet" href="../../css/perfil.css">
     <title>Lista de viagens</title>
 </head>
 <body>
@@ -19,9 +18,7 @@
   </nav>
 
     <div>
-        <h3>Bem vindo ao Uniride!</h3>
-
-        <p>Aqui estão as caronas disponíveis!</p>
+        <h3 id="boasVindas"></h3>
 
         <section class="container">
             <input type="text" id="buscarCarona" placeholder="Ex: Rua Imaculada da Conceição...">
@@ -43,6 +40,7 @@
             <p id="semCaronasDisponiveis"></p>
         </div>
     </div>
+        <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
         <script src="../javascript/getViagem.js"></script>
         <script src="../../javascript/logout.js"></script>
 

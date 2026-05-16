@@ -76,7 +76,7 @@ nav {
 }
 
 /* formulario */
-body > div {
+body > div:not(.swal2-container) {
   background: rgba(43, 44, 68, 0.4);
   padding: 3rem;
   border-radius: var(--border-radius);
@@ -92,7 +92,7 @@ body > div {
 }
 
 /* titulo */
-body > div::before {
+body > div:not(.swal2-container)::before {
   content: "Dados da Viagem";
   width: 100%;
   font-size: 1.8rem;
@@ -101,7 +101,7 @@ body > div::before {
   margin-bottom: 1rem;
 }
 
-body > div > div:not(:last-child) {
+body > div:not(.swal2-container) > div:not(:last-child) {
   flex: 1 1 calc(50% - 1.5rem); 
   min-width: 280px;
   display: flex;
@@ -113,7 +113,7 @@ body > div > div:not(:last-child) {
 }
 
 /* botoes */
-body > div > div:last-child {
+body > div:not(.swal2-container) > div:last-child {
   flex: 1 1 100%;
   display: flex;
   align-items: center;

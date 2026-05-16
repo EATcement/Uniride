@@ -22,23 +22,26 @@
             <div>
                 <label for="dataVencimento">Data de vencimento:</label>
                 <input type="date" id="dataVencimento" name="dataVencimento">
+                <p id="erroDataVencimento" style="display: none; color: var(--color-accent-red);"></p>
             </div>
 
             <div>
                 <label for="numeroRegistro">Número de registro:</label>
                 <input type="text" id="numeroRegistro" name="numeroRegistro">
+                <p id="erroNumeroRegistro" style="display: none; color: var(--color-accent-red);"></p>
             </div>
 
             <div>
                 <label for="cpf">CPF do condutor:</label>
                 <input type="text" id="cpf" name="cpf">
+                <p id="erroCpf"            style="display: none; color: var(--color-accent-red);"></p>
             </div>
         </div>
 
         <div>
             <button type="button" id="enviar">Cadastrar</button>        
         </div>
-
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     <script src="../javascript/tornarMotorista.js"></script>
 </body>
 </html>
