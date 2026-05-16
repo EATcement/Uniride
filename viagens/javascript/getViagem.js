@@ -89,8 +89,6 @@ async function carregarDados() {
             if (usuarioLogadoId && objeto.usuario_id == usuarioLogadoId) {
                 acaoBotao = "<span>Minha Carona</span>";
             } else {
-                // --- TRAVA DO PASSAGEIRO ---
-                // Verifica se o PHP retornou que este usuário já participa ou solicitou a vaga
                 const jaEstaNoGrupo = (Number(objeto.ja_participa) === 1 || objeto.ja_participa === true);
 
                 if (jaEstaNoGrupo) {
@@ -99,7 +97,6 @@ async function carregarDados() {
                     acaoBotao = `<button onclick="solicitarEntrada(${objeto.id}, 'passageiro')">Entrar como Passageiro</button>`;
                 }
 
-                // --- TRAVA DO MOTORISTA (Se mantém caso ele seja motorista) ---
                 if (isMotoristaLogado && !jaEstaNoGrupo) { 
                     const temMotoristaAceito = Number(objeto.temMotorista);
                     const vagaMotoristaOcupada = (temMotoristaAceito > 0 || objeto.tipoCarona === 'motorista');

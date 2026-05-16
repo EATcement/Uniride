@@ -91,7 +91,6 @@ function validarCampos() {
     let valido = true;
     const tipoCarona = document.getElementById("tipoCarona").value;
 
-    // Valida campos base
     for (const campo of campos) {
         const valor   = document.getElementById(campo.id).value.trim();
         const erroEl  = document.getElementById(campo.erro);
