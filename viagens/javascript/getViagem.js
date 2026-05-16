@@ -1,29 +1,56 @@
-document.addEventListener("DOMContentLoaded", () => {
-    carregarPerfil(); // adicione esta linha
+let usuarioLogadoId = null;
+let isMotoristaLogado = false;
+
+document.addEventListener("DOMContentLoaded", async () => {
+    await buscarUsuarioLogado();
 
     if (document.getElementById("lista")) {
-        carregarDados();
-        document.getElementById("buscarCarona").addEventListener("input", carregarDados);
+        await carregarDados(); 
+        
+        const campoBusca = document.getElementById("buscarCarona");
+        if (campoBusca) {
+            campoBusca.addEventListener("input", carregarDados);
+        }
     }
 });
 
-async function carregarPerfil() {
-    const retorno = await fetch("../../php/getPerfil.php");
-    const resposta = await retorno.json();
+async function buscarUsuarioLogado() {
+    try {
+        const response = await fetch("../../php/getSessao.php"); 
+        
+        if (!response.ok) {
+            console.error("Não encontrou o arquivo de sessão. Status:", response.status);
+            return;
+        }
 
-    if (resposta.status === "ok") {
-        const usuario = resposta.data;
-        document.getElementById("boasVindas").innerHTML = 
-            `Bem vindo ao Uniride, <strong>${usuario.nome}</strong>!`;
+        const dados = await response.json();
+        console.log("Dados recebidos da sessão:", dados); 
+
+        if (dados.logado || dados.id || dados.usuario_id) {
+            usuarioLogadoId = dados.id || dados.usuario_id || $_SESSION['usuario_id'];
+            
+            const statusMotorista = dados.isMotorista ?? dados.motorista ?? 0;
+            isMotoristaLogado = (Number(statusMotorista) === 1);
+            
+            console.log("ID do Usuário Carregado:", usuarioLogadoId);
+            console.log("É Motorista?", isMotoristaLogado);
+        }
+    } catch (e) {
+        console.error("Erro ao ler a sessão no JS:", e);
     }
 }
 
 const botaoNovo = document.getElementById("novaViagem");
+
 if (botaoNovo) {
+
     botaoNovo.addEventListener("click", () => {
+
         window.location.href = '../html/novaViagem.html';
+
     });
-}
+
+} 
 
 async function carregarDados() {
     const retorno = await fetch("../php/getViagem.php");
@@ -37,52 +64,94 @@ async function carregarDados() {
             objeto.pontoChegada.toLowerCase().includes(filtro)
         );
         
-        if (registros == "" || registros == null) {
-            document.getElementById("semCaronasDisponiveis").innerHTML = "Nenhuma carona disponível para o local pesquisado.";
+        const containerErro = document.getElementById("semCaronasDisponiveis");
+        if (registros.length === 0) {
+            containerErro.innerHTML = "Nenhuma carona disponível para o local pesquisado.";
         } else {
-            document.getElementById("semCaronasDisponiveis").innerHTML = "";
+            containerErro.innerHTML = "";
         }
 
-        html = "";
+        let html = `<table>
+        <tr>
+            <th>Título</th>
+            <th>Descrição</th>
+            <th>Ponto de Partida</th>
+            <th>Ponto de Chegada</th>
+            <th>Data e Hora</th>
+            <th>Preço</th>
+            <th>Ação</th>
+        </tr>`;
 
-        for (var i = 0; i < registros.length; i++) {
-            var objeto = registros[i];
-            
-            if (!objeto) continue;
+        for (let i = 0; i < registros.length; i++) {
+            let objeto = registros[i];
+            let acaoBotao = "";
 
-            var tipoLabel = objeto.tipoCarona === "passageiro" ? "Solicitação" : "Oferta";
+            if (usuarioLogadoId && objeto.usuario_id == usuarioLogadoId) {
+                acaoBotao = "<span>Minha Carona</span>";
+            } else {
+                const jaEstaNoGrupo = (Number(objeto.ja_participa) === 1 || objeto.ja_participa === true);
 
+                if (jaEstaNoGrupo) {
+                    acaoBotao = `<button disabled style="background:#7f8c8d; color:white; cursor:not-allowed;" title="Você já solicitou ou entrou nesta carona">✓</button>`;
+                } else {
+                    acaoBotao = `<button onclick="solicitarEntrada(${objeto.id}, 'passageiro')">Entrar como Passageiro</button>`;
+                }
 
-            html += 
-                `<div class="card">
-                    
-                    <h3>${objeto.titulo}</h3>
+                if (isMotoristaLogado && !jaEstaNoGrupo) { 
+                    const temMotoristaAceito = Number(objeto.temMotorista);
+                    const vagaMotoristaOcupada = (temMotoristaAceito > 0 || objeto.tipoCarona === 'motorista');
 
-                    <strong>Descrição</strong>
-                    <p>${objeto.descricao}</p>
+                    if (vagaMotoristaOcupada) {
+                        acaoBotao += `<button disabled style="background:gray; color:white;" title="Esta carona já possui um motorista">Motorista Ocupado</button>`;                     
+                    } else {
+                        acaoBotao += `<button onclick="solicitarEntrada(${objeto.id}, 'motorista')" style="background:green; color:white; margin-left:5px;">Entrar como Motorista</button>`;                     
+                    }
+                }
+            }
 
-                    <strong>Ponto de Partida</strong>
-                    <p>${objeto.pontoPartida}</p>
-
-                    <strong>Ponto de Chegada</strong>
-                    <p>${objeto.pontoChegada}</p>
-
-                    <strong>Data e Hora</strong>
-                    <p>${objeto.dataHora}</p>
-
-                    <strong>Preço</strong>
-                    <p>${objeto.preco}</p>
-
-                    <strong>Tipo de carona</strong>
-                    <p>${tipoLabel}</p>
-
-                </div>
-                `;
+            html += `<tr>
+                        <td>${objeto.titulo}</td>
+                        <td>${objeto.descricao}</td>
+                        <td>${objeto.pontoPartida}</td>
+                        <td>${objeto.pontoChegada}</td>
+                        <td>${objeto.dataHora}</td>
+                        <td>${objeto.preco}</td>
+                        <td style="white-space: nowrap; padding: 10px; text-align: center;">${acaoBotao}</td>                    
+                        </tr>`;
         }
+        html += "</table>";
 
         document.getElementById("lista").innerHTML = html;
 
     } else {
         console.log("Erro: " + resposta.mensagem);
     }
-};
+}
+
+async function solicitarEntrada(viagemId, tipoVaga = 'passageiro') { 
+    if (!usuarioLogadoId) {
+        alert("Você precisa estar logado!");
+        return;
+    }
+
+    const dados = {
+        viagem_id: viagemId,
+        solicitante_id: usuarioLogadoId,
+        tipo_vaga: tipoVaga
+    };
+
+    try {
+        const response = await fetch("../../php/postSolicitacao.php", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify(dados)
+        });
+
+        const result = await response.json();
+        alert(result.mensagem);
+        carregarDados();
+    } catch (error) {
+        console.error(error);
+        alert("Erro ao enviar solicitação.");
+    }
+}
