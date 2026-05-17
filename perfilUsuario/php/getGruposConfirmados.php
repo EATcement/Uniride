@@ -11,6 +11,7 @@ if (!isset($_SESSION['usuario_id'])) {
 $id_logado = (int)$_SESSION['usuario_id'];
 
 $sql = "SELECT 
+            v.id AS id_viagem,
             v.titulo AS titulo_viagem, 
             v.usuario_id AS criador_id,
             u_criador.nome AS nome_criador,
@@ -18,12 +19,12 @@ $sql = "SELECT
             v.tipoCarona,
             s.tipo_vaga
         FROM solicitacao_viagem s
-        JOIN viagem v ON s.viagem_id = v.id
+        JOIN grupo_viagem v ON s.viagem_id = v.id
         JOIN usuario u_passageiro ON s.passageiro_id = u_passageiro.id_usuario
         JOIN usuario u_criador ON v.usuario_id = u_criador.id_usuario
         WHERE v.id IN (
             SELECT DISTINCT v2.id 
-            FROM viagem v2
+            FROM grupo_viagem v2
             LEFT JOIN solicitacao_viagem s2 ON v2.id = s2.viagem_id
             WHERE v2.usuario_id = ? OR (s2.passageiro_id = ? AND s2.status = 'aceito')
         ) 
@@ -44,6 +45,7 @@ while ($linha = $resultado->fetch_assoc()) {
         $criadorEhMotorista = ($linha['tipoCarona'] === 'motorista');
         
         $grupos[$chave_grupo] = [
+            "id" => $linha['id_viagem'],
             "titulo" => $linha['titulo_viagem'], // Guardamos o título aqui dentro agora
             "sou_dono" => ((int)$linha['criador_id'] === $id_logado),
             "responsavel" => $linha['nome_criador'],

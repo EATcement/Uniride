@@ -15,7 +15,7 @@
 
 if (isset($_GET['id'])) {
     $id = $_GET['id'];
-    $stmt = $conexao->prepare("DELETE FROM Viagem WHERE id = ?");
+    $stmt = $conexao->prepare("DELETE FROM grupo_viagem WHERE id = ?");
     $stmt->bind_param("i", $id);
     $stmt->execute();
 

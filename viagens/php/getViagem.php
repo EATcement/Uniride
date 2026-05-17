@@ -22,25 +22,35 @@ if (isset($_GET['id'])) {
     $id = $_GET['id'];
     
     $sql = "SELECT v.*, 
+                   vr.id AS recorrencia_id,
+                   vr.dia_semana,
+                   vr.hora AS hora_recorrencia,
+                   vr.data_inicio,
                    (SELECT COUNT(*) FROM solicitacao_viagem s 
                     WHERE s.viagem_id = v.id AND s.status = 'aceito' AND s.tipo_vaga = 'motorista') as temMotorista,
                    (SELECT COUNT(*) FROM solicitacao_viagem sv 
                     WHERE sv.viagem_id = v.id AND sv.passageiro_id = ? AND sv.status IN ('aceito', 'pendente')) as ja_participa
-            FROM viagem v 
+            FROM grupo_viagem v
+            LEFT JOIN viagem_recorrencia vr ON vr.viagem_id = v.id
             WHERE v.id = ?";
             
     $stmt = $conexao->prepare($sql);
     $stmt->bind_param("ii", $id_logado, $id);
 } else {
     $sql = "SELECT v.*, 
+                   vr.id AS recorrencia_id,
+                   vr.dia_semana,
+                   vr.hora AS hora_recorrencia,
+                   vr.data_inicio,
                    (SELECT COUNT(*) FROM solicitacao_viagem s 
                     WHERE s.viagem_id = v.id AND s.status = 'aceito' AND s.tipo_vaga = 'motorista') as temMotorista,
                    (SELECT COUNT(*) FROM solicitacao_viagem sv 
                     WHERE sv.viagem_id = v.id AND sv.passageiro_id = ? AND sv.status IN ('aceito', 'pendente')) as ja_participa
-            FROM viagem v";
+            FROM grupo_viagem v
+            LEFT JOIN viagem_recorrencia vr ON vr.viagem_id = v.id
+            ORDER BY v.id, vr.dia_semana";
             
     $stmt = $conexao->prepare($sql);
-    // Passamos o id_logado para o '?'
     $stmt->bind_param("i", $id_logado);
 }
 

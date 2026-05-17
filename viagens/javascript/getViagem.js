@@ -1,6 +1,16 @@
 let usuarioLogadoId = null;
 let isMotoristaLogado = false;
 
+const diasSemana = {
+    0: 'Domingo',
+    1: 'Segunda',
+    2: 'Terça',
+    3: 'Quarta',
+    4: 'Quinta',
+    5: 'Sexta',
+    6: 'Sábado'
+};
+
 document.addEventListener("DOMContentLoaded", async () => {
     await buscarUsuarioLogado();
 
@@ -27,13 +37,10 @@ async function buscarUsuarioLogado() {
         console.log("Dados recebidos da sessão:", dados); 
 
         if (dados.logado || dados.id || dados.usuario_id) {
-            usuarioLogadoId = dados.id || dados.usuario_id || $_SESSION['usuario_id'];
+            usuarioLogadoId = dados.id || dados.usuario_id;
             
             const statusMotorista = dados.isMotorista ?? dados.motorista ?? 0;
             isMotoristaLogado = (Number(statusMotorista) === 1);
-            
-            console.log("ID do Usuário Carregado:", usuarioLogadoId);
-            console.log("É Motorista?", isMotoristaLogado);
         }
     } catch (e) {
         console.error("Erro ao ler a sessão no JS:", e);
@@ -41,16 +48,11 @@ async function buscarUsuarioLogado() {
 }
 
 const botaoNovo = document.getElementById("novaViagem");
-
 if (botaoNovo) {
-
     botaoNovo.addEventListener("click", () => {
-
         window.location.href = '../html/novaViagem.html';
-
     });
-
-} 
+}
 
 async function carregarDados() {
     const retorno = await fetch("../php/getViagem.php");
@@ -59,11 +61,26 @@ async function carregarDados() {
     if (resposta.status == "ok") {
         const filtro = document.getElementById("buscarCarona").value.toLowerCase().trim();
 
-        const registros = resposta.data.filter(objeto =>
+        // agrupa os registros por id da viagem
+        const grupos = {};
+        resposta.data.forEach(objeto => {
+            if (!grupos[objeto.id]) {
+                grupos[objeto.id] = { ...objeto, dias: [] };
+            }
+            if (objeto.dia_semana !== null) {
+                grupos[objeto.id].dias.push({
+                    dia: objeto.dia_semana,
+                    hora: objeto.hora_recorrencia,
+                    data_inicio: objeto.data_inicio
+                });
+            }
+        });
+
+        const registros = Object.values(grupos).filter(objeto =>
             objeto.pontoPartida.toLowerCase().includes(filtro) ||
             objeto.pontoChegada.toLowerCase().includes(filtro)
         );
-        
+
         const containerErro = document.getElementById("semCaronasDisponiveis");
         if (registros.length === 0) {
             containerErro.innerHTML = "Nenhuma carona disponível para o local pesquisado.";
@@ -71,16 +88,7 @@ async function carregarDados() {
             containerErro.innerHTML = "";
         }
 
-        let html = `<table>
-        <tr>
-            <th>Título</th>
-            <th>Descrição</th>
-            <th>Ponto de Partida</th>
-            <th>Ponto de Chegada</th>
-            <th>Data e Hora</th>
-            <th>Preço</th>
-            <th>Ação</th>
-        </tr>`;
+        let html = '';
 
         for (let i = 0; i < registros.length; i++) {
             let objeto = registros[i];
@@ -92,34 +100,58 @@ async function carregarDados() {
                 const jaEstaNoGrupo = (Number(objeto.ja_participa) === 1 || objeto.ja_participa === true);
 
                 if (jaEstaNoGrupo) {
-                    acaoBotao = `<button disabled style="background:#7f8c8d; color:white; cursor:not-allowed;" title="Você já solicitou ou entrou nesta carona">✓</button>`;
+                    acaoBotao = `<button disabled style="background:#7f8c8d; color:white; cursor:not-allowed;">✓ Já solicitado</button>`;
                 } else {
                     acaoBotao = `<button onclick="solicitarEntrada(${objeto.id}, 'passageiro')">Entrar como Passageiro</button>`;
                 }
 
-                if (isMotoristaLogado && !jaEstaNoGrupo) { 
+                if (isMotoristaLogado && !jaEstaNoGrupo) {
                     const temMotoristaAceito = Number(objeto.temMotorista);
                     const vagaMotoristaOcupada = (temMotoristaAceito > 0 || objeto.tipoCarona === 'motorista');
 
                     if (vagaMotoristaOcupada) {
-                        acaoBotao += `<button disabled style="background:gray; color:white;" title="Esta carona já possui um motorista">Motorista Ocupado</button>`;                     
+                        acaoBotao += `<button disabled style="background:gray; color:white;">Motorista Ocupado</button>`;
                     } else {
-                        acaoBotao += `<button onclick="solicitarEntrada(${objeto.id}, 'motorista')" style="background:green; color:white; margin-left:5px;">Entrar como Motorista</button>`;                     
+                        acaoBotao += `<button onclick="solicitarEntrada(${objeto.id}, 'motorista')" style="background:green; color:white;">Entrar como Motorista</button>`;
                     }
                 }
             }
 
-            html += `<tr>
-                        <td>${objeto.titulo}</td>
-                        <td>${objeto.descricao}</td>
-                        <td>${objeto.pontoPartida}</td>
-                        <td>${objeto.pontoChegada}</td>
-                        <td>${objeto.dataHora}</td>
-                        <td>${objeto.preco}</td>
-                        <td style="white-space: nowrap; padding: 10px; text-align: center;">${acaoBotao}</td>                    
-                        </tr>`;
+            // monta recorrência
+            let recorrenciaHtml = '';
+            if (objeto.tipoRecorrencia === 'recorrente' && objeto.dias.length > 0) {
+                recorrenciaHtml = `<p><strong>Dias:</strong><br> ${objeto.dias.map(d => diasSemana[d.dia]).join(', ')}</p>
+                                   <p><strong>Horário:</strong><br> ${objeto.dias[0].hora}</p>
+                                   <p><strong>A partir de:</strong><br> ${objeto.dias[0].data_inicio}</p>`;
+            } else {
+                recorrenciaHtml = `<p><strong>Data e Hora:</strong><br> ${objeto.dataHora ?? '-'}</p>`;
+            }
+
+            if (objeto.tipoCarona = "passageiro") {
+                tipoExibido = "Solicitação de carona"
+            } else {
+                tipoExibido = "Oferta de carona"
+            }
+
+            html += `
+                <div class="card-viagem">
+                    <div class="card-header">
+                        <h3>${objeto.titulo}</h3>
+                    </div>
+                    <div class="card-body">
+                        <p><strong>Tipo do grupo:</strong><br>${tipoExibido}</p>
+                        <p><strong>Descrição:</strong><br>${objeto.descricao}</p>
+                        <p><strong>Partida:</strong><br>${objeto.pontoPartida}</p>
+                        <p><strong>Chegada:</strong><br>${objeto.pontoChegada}</p>
+                        <p><strong>Preço:</strong><br>R$ ${objeto.preco}</p>
+                        ${recorrenciaHtml}
+                    </div>
+                    <div class="card-footer">
+                        ${acaoBotao}
+                    </div>
+                </div>
+            `;
         }
-        html += "</table>";
 
         document.getElementById("lista").innerHTML = html;
 

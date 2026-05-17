@@ -1,0 +1,220 @@
+        :root {
+            --color-primary-dark: #2b2c44;
+            --color-secondary-gray: #8d99ae;
+            --color-background: #1a1b2e;
+            --color-accent-red: #ef233e;
+            --color-accent-red-dark: #d70232;
+            --color-white: #eef2f5;
+            --font-family: -apple-system, BlinkMacSystemFont, "SF Pro Display", "SF Pro Text", "Helvetica Neue", Helvetica, Arial, sans-serif;
+            --transition: all 0.3s ease;
+            --border-radius: 1.5rem;
+        }
+
+        
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: sans-serif;
+            background-color: #1a1b2e;
+            color: #ffffff;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            padding: 20px;
+            min-height: 100vh;
+        }
+
+        #chat-container {
+            width: 100%;
+            max-width: 700px;
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+
+        #titulo-grupo {
+            color: #3498db;
+            font-size: 1.4rem;
+            text-align: center;
+            padding-bottom: 10px;
+            border-bottom: 1px solid #2a3b4c;
+        }
+
+        #area-mensagens {
+            background: #1e2d3b;
+            border: 1px solid #2a3b4c;
+            border-radius: 8px;
+            padding: 15px;
+            height: 450px;
+            overflow-y: auto;
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+
+        .mensagem {
+            display: flex;
+            flex-direction: column;
+            max-width: 70%;
+        }
+
+        .mensagem.minha {
+            align-self: flex-end;
+        }
+
+        .mensagem.outra {
+            align-self: flex-start;
+        }
+
+        .mensagem .nome {
+            font-size: 0.75rem;
+            color: #bdc3c7;
+            margin-bottom: 3px;
+        }
+
+        .mensagem.minha .nome {
+            text-align: right;
+            color: #3498db;
+        }
+
+        .mensagem .balao {
+            padding: 8px 12px;
+            border-radius: 8px;
+            font-size: 0.9rem;
+            line-height: 1.4;
+        }
+
+        .mensagem.minha .balao {
+            background: #2980b9;
+            color: #ffffff;
+            border-radius: 8px 0px 8px 8px;
+        }
+
+        .mensagem.outra .balao {
+            background: #2a3b4c;
+            color: #ffffff;
+            border-radius: 0px 8px 8px 8px;
+        }
+
+        .mensagem .hora {
+            font-size: 0.7rem;
+            color: #7f8c8d;
+            margin-top: 3px;
+        }
+
+        .mensagem.minha .hora {
+            text-align: right;
+        }
+
+        #area-input {
+            display: flex;
+            gap: 10px;
+        }
+
+        #input-mensagem {
+            flex: 1;
+            padding: 10px 15px;
+            border-radius: 8px;
+            border: 1px solid #2a3b4c;
+            background: #1e2d3b;
+            color: #ffffff;
+            font-size: 0.9rem;
+            outline: none;
+        }
+
+        #input-mensagem:focus {
+            border-color: #3498db;
+        }
+
+        #btn-enviar {
+            padding: 10px 20px;
+            background: #2980b9;
+            color: white;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 0.9rem;
+            transition: background 0.2s;
+        }
+
+        #btn-enviar:hover {
+            background: #3498db;
+        }
+
+
+
+        /* nav */
+
+        nav {
+        position: fixed;
+        top: 0;
+        left: 0;              /* <-- adicionar isso */
+        width: 100vw;         /* <-- trocar 100% por 100vw */
+        width: 100%;
+        height: 70px;
+        z-index: 1000;
+        background-color: var(--color-primary-dark);
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+        display: flex;
+        align-items: center;
+        }
+
+        .navbar-container {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        max-width: 1200px;
+        width: 100%;
+        margin: 0 auto;
+        padding: 0 2rem;
+        }
+
+        .logo {
+        font-size: 1.5rem;
+        font-weight: 700;
+        color: var(--color-white);
+        text-decoration: none;
+        letter-spacing: -0.02em;
+        }
+
+        .nav-menu {
+        display: flex;
+        align-items: center;
+        list-style: none;
+        }
+
+        .nav-menu li a {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        color: var(--color-white);
+        text-decoration: none;
+        font-weight: 600;
+        font-size: 0.9rem;
+        padding: 0.6rem 1.2rem;
+        border-radius: 50px;
+        transition: var(--transition);
+        }
+
+        /*.nav-menu li a::before {
+        content: "";
+        width: 30px;
+        height: 30px;
+        background-color: var(--color-secondary-gray);
+        border-radius: 50%;
+        display: inline-block;
+        flex-shrink: 0;
+        }*/
+
+        .nav-menu li a:hover {
+        background-color: var(--color-accent-red);
+        color: white;
+        }
+
+        .nav-menu li a:hover::before {
+        background-color: white;
+        }

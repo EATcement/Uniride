@@ -16,7 +16,7 @@ $sql = "SELECT
             v.titulo AS titulo_viagem,
             s.tipo_vaga 
         FROM solicitacao_viagem s
-        JOIN viagem v ON s.viagem_id = v.id
+        JOIN grupo_viagem v ON s.viagem_id = v.id
         JOIN usuario u ON s.passageiro_id = u.id_usuario
         WHERE v.usuario_id = ? AND s.status = 'pendente'";
 

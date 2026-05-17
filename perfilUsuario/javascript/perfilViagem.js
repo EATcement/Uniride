@@ -23,45 +23,89 @@ async function carregarDadosViagem() {
     if (resposta.status == "ok") {
         const registros = resposta.data;
 
-        var html = `<table>
-        <tr>
-            <th>Ações</th>
-            <th>Título</th>
-            <th>Descrição</th>
-            <th>Ponto de Partida</th>
-            <th>Ponto de Chegada</th>
-            <th>Data e Hora</th>
-            <th>Preço</th>
-            <th>Tipo de carona</th>
-            <th>Recorrência</th>
-        </tr>`;
+        // agrupa por id da viagem
+        const grupos = {};
+        registros.forEach(objeto => {
+            if (!grupos[objeto.id]) {
+                grupos[objeto.id] = { ...objeto, dias: [] };
+            }
+            if (objeto.dia_semana !== null) {
+                grupos[objeto.id].dias.push({
+                    dia: objeto.dia_semana,
+                    hora: objeto.hora_recorrencia,
+                    data_inicio: objeto.data_inicio
+                });
+            }
+        });
 
-        for (var i = 0; i < registros.length; i++) {
-            var objeto = registros[i];
+        let html = "";
 
-            var recorrencia = '';
-            if (objeto.tipoRecorrencia === 'recorrente' && objeto.dia_semana !== null) {
-                recorrencia = `${diasSemana[objeto.dia_semana]} às ${objeto.hora_recorrencia} (a partir de ${objeto.data_inicio})`;
+        Object.values(grupos).forEach(objeto => {
+            let recorrenciaHTML = "";
+
+            if (objeto.tipoRecorrencia === 'recorrente' && objeto.dias.length > 0) {
+                recorrenciaHTML = `
+                    <p style="margin: 8px 0;">
+                        <strong style="color: #bdc3c7;">Dias:</strong>
+                        <span style="color: #ffffff;">${objeto.dias.map(d => diasSemana[d.dia]).join(', ')}</span>
+                    </p>
+                    <p style="margin: 8px 0;">
+                        <strong style="color: #bdc3c7;">Horário:</strong>
+                        <span style="color: #ffffff;">${objeto.dias[0].hora}</span>
+                    </p>
+                    <p style="margin: 8px 0;">
+                        <strong style="color: #bdc3c7;">A partir de:</strong>
+                        <span style="color: #ffffff;">${objeto.dias[0].data_inicio}</span>
+                    </p>`;
             } else {
-                recorrencia = 'Avulsa';
+                recorrenciaHTML = `
+                    <p style="margin: 8px 0;">
+                        <strong style="color: #bdc3c7;">Data e Hora:</strong>
+                        <span style="color: #ffffff;">${objeto.dataHora ?? '-'}</span>
+                    </p>`;
             }
 
-            html += `<tr>
-                        <td> 
-                            <a href='../html/alterarViagem.html?id=${objeto.id}' class='alterar'>Alterar</a>
-                            <a href='#' onclick='excluirViagem(${objeto.id})' class='excluir'>Excluir</a>
-                        </td>
-                        <td>${objeto.titulo}</td>
-                        <td>${objeto.descricao}</td>
-                        <td>${objeto.pontoPartida}</td>
-                        <td>${objeto.pontoChegada}</td>
-                        <td>${objeto.dataHora ?? '-'}</td>
-                        <td>${objeto.preco}</td>
-                        <td>${objeto.tipoCarona}</td>
-                        <td>${recorrencia}</td>
-                    </tr>`;
-        }
-        html += "</table>";
+            html += `
+                <div style="background: #1e2d3b; border: 1px solid #2a3b4c; padding: 15px; margin-bottom: 15px; border-radius: 8px; color: #ffffff; font-family: sans-serif; box-shadow: 0 4px 6px rgba(0,0,0,0.1);">
+                    <h2 style="color: #3498db; margin-top: 0; border-bottom: 1px solid #2a3b4c; padding-bottom: 8px;">${objeto.titulo}</h2>
+
+                    <p style="margin: 8px 0;">
+                        <strong style="color: #bdc3c7;">Tipo de carona:</strong>
+                        <span style="color: #2ecc71; font-weight: bold;">${objeto.tipoCarona}</span>
+                    </p>
+                    <p style="margin: 8px 0;">
+                        <strong style="color: #bdc3c7;">Descrição:</strong>
+                        <span style="color: #ffffff;">${objeto.descricao}</span>
+                    </p>
+                    <p style="margin: 8px 0;">
+                        <strong style="color: #bdc3c7;">Partida:</strong>
+                        <span style="color: #ffffff;">${objeto.pontoPartida}</span>
+                    </p>
+                    <p style="margin: 8px 0;">
+                        <strong style="color: #bdc3c7;">Chegada:</strong>
+                        <span style="color: #ffffff;">${objeto.pontoChegada}</span>
+                    </p>
+                    <p style="margin: 8px 0;">
+                        <strong style="color: #bdc3c7;">Preço:</strong>
+                        <span style="color: #ffffff;">R$ ${objeto.preco}</span>
+                    </p>
+
+                    ${recorrenciaHTML}
+
+
+                    <div style="margin-top: 12px; display: center; gap: 8px;">
+                        <a href="../html/alterarViagem.html?id=${objeto.id}'" 
+                           style="background: #2980b9; color: white; border-radius: 4px; padding: 4px 10px; text-decoration: none; font-size: 0.9rem;">
+                            ✏️ Alterar
+                        </a>
+                        <a href="#" onclick="excluirViagem(${objeto.id}"
+                           style="background: #dc3545; color: white; border-radius: 4px; padding: 4px 10px; text-decoration: none; font-size: 0.9rem;">
+                            🗑️ Excluir
+                        </a>
+                    </div>
+                    
+                </div>`;
+        });
 
         document.getElementById("listaViagem").innerHTML = html;
 
@@ -78,6 +122,6 @@ async function excluirViagem(id) {
         console.log(resposta.mensagem);
         window.location.reload();
     } else {
-        console.log("Erro: " + resposta.mensagem)
+        console.log("Erro: " + resposta.mensagem);
     }
 }

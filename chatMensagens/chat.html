@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Chat do Grupo</title>
+    <link rel="stylesheet" href="../css/chat.css">
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+</head>
+
+
+<body>
+
+    <nav>
+        <div class="navbar-container">
+            <a href="#" class="logo">UniRide</a>
+            <ul class="nav-menu">
+                <li><a href="../perfilUsuario/html/perfil.html">Voltar</a></li>
+                <li><a href="../php/logout.php">Logout</a></li>
+            </ul>
+        </div>
+    </nav>
+
+    <br><br><br><br><br>
+    
+    <div id="chat-container">
+        <h2 id="titulo-grupo">Carregando...</h2>
+
+        <div id="area-mensagens">
+            <!-- mensagens aparecem aqui -->
+        </div>
+
+        <div id="area-input">
+            <input type="text" id="input-mensagem" placeholder="Digite sua mensagem...">
+            <button id="btn-enviar">Enviar</button>
+        </div>
+    </div>
+
+    <script src="chat.js"></script>
+</body>
+</html>

@@ -69,6 +69,12 @@ async function carregarGrupos() {
                     <ul style="list-style: none; padding-left: 0; margin: 0;">
                         ${listaPassageirosHTML}
                     </ul>
+
+                    <br> 
+
+                    <div>
+                        <a href="../../chatMensagens/chat.html?grupo_viagem_id=${info.id}" style="background: #2980b9; color: white; border: none; border-radius: 4px; padding: 4px 10px; cursor: pointer; text-decoration: none; font-size: 0.9rem;"> 💬 Chat </a>
+                    </div>    
                 </div>`;
         });
 

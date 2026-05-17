@@ -26,13 +26,15 @@ body {
   padding: 110px 2rem 50px 2rem;
   display: flex;
   flex-direction: column;
-  align-items: center; 
+  align-items: stretch;
 }
 
 /* nav */
 nav {
   position: fixed;
   top: 0;
+  left: 0;              /* <-- adicionar isso */
+  width: 100vw;         /* <-- trocar 100% por 100vw */
   width: 100%;
   height: 70px;
   z-index: 1000;
@@ -107,11 +109,13 @@ nav {
   border-radius: var(--border-radius);
   border: 1px solid rgba(255, 255, 255, 0.1);
   width: 100%;
-  max-width: 1300px;
+  max-width: 1200px;
   box-shadow: 0 20px 50px rgba(0, 0, 0, 0.5);
   backdrop-filter: blur(10px);
   margin-bottom: 2rem;
   text-align: center; 
+  margin: 0 auto;
+
 }
 
 /* layout */
@@ -145,8 +149,8 @@ hr {
   height: 1px;
   background: rgba(255, 255, 255, 0.1);
   width: 100%;
-  max-width: 900px;
-  margin: 1rem 0 3rem 0;
+  max-width: 1200px;
+  margin: 1rem auto 3rem auto;
 }
 
 /* botoes */
@@ -178,9 +182,9 @@ button.button {
 #listaViagem {
   width: 100%;
   margin-top: 1.5rem;
-  border-collapse: collapse;
-  text-align: left;
-  font-size: 0.875rem;
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
 }
 
 #lista thead tr,
