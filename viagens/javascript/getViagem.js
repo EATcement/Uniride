@@ -1,3 +1,17 @@
+document.addEventListener("DOMContentLoaded", () => {
+    carregarPerfil();
+})
+async function carregarPerfil() {
+    const retorno = await fetch("../../php/getPerfil.php");
+    const resposta = await retorno.json();
+
+    if (resposta.status === "ok") {
+        const usuario = resposta.data;
+        document.getElementById("boasVindas").innerHTML = 
+            `Bem vindo ao Uniride, <strong>${usuario.nome}</strong>!`;
+    }
+}
+
 let usuarioLogadoId = null;
 let isMotoristaLogado = false;
 

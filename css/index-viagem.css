@@ -76,14 +76,11 @@ nav {
   transition: var(--transition);
 }
 
-.nav-menu li a::before {
-  content: "";
-  width: 30px;
+.icone-perfil {
+  width: 30px; /* Mesmo tamanho que a bolinha tinha */
   height: 30px;
-  background-color: var(--color-secondary-gray);
-  border-radius: 50%;
-  display: inline-block;
-  flex-shrink: 0;
+  border-radius: 50%; /* Se o seu ícone for quadrado, isso deixa ele redondo. Se já for redondo, pode tirar! */
+  object-fit: cover; /* Garante que a imagem não fique esticada/espremida */
 }
 
 .nav-menu li a:hover {
@@ -95,9 +92,21 @@ nav {
   background-color: white;
 }
 
+.logo {
+    display: flex;
+    align-items: center; /* Alinha o ícone e o texto no meio */
+    gap: 10px; /* Dá um espaço entre o ícone e a palavra */
+}
+
+/* Adicione essa nova classe para controlar o tamanho do ícone */
+.icone-logo {
+    width: 30px; /* Ajuste esse valor para deixar o ícone maior ou menor */
+    height: auto;
+}
+
 /* container */
 body > div {
-  max-width: 1600px;
+  max-width: 1200px;
   margin: 0 auto;
   padding: 0 2rem 4rem 2rem;
 }
@@ -210,4 +219,8 @@ button#novaViagem.button:hover {
   border: 2px dashed rgba(255, 255, 255, 0.1);
   border-radius: 1.5rem;
   background: rgba(255, 255, 255, 0.02);
+}
+/* cancela a bolinha */
+.nav-menu li a.btn-logout::before {
+    display: none;
 }

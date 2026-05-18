@@ -17,7 +17,7 @@
   --color-white: #eef2f5;
   
   /* fonte */
-  --font-family: 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+  --font-family: -apple-system, BlinkMacSystemFont, "SF Pro Display", "SF Pro Text", "Helvetica Neue", Helvetica, Arial, sans-serif;
   
   /* espaço */
   --spacing-sm: 1rem;
@@ -43,6 +43,7 @@ body {
   color: var(--color-white);
   line-height: 1.6;
   overflow-x: hidden;
+  -webkit-font-smoothing: antialiased;
 }
 
 /* nav */
@@ -89,6 +90,18 @@ body {
 
 .nav-menu a:hover {
   background-color: var(--color-accent-red);
+}
+
+.logo {
+    display: flex;
+    align-items: center; /* Alinha o ícone e o texto no meio */
+    gap: 10px; /* Dá um espaço entre o ícone e a palavra */
+}
+
+/* Adicione essa nova classe para controlar o tamanho do ícone */
+.icone-logo {
+    width: 30px; /* Ajuste esse valor para deixar o ícone maior ou menor */
+    height: auto;
 }
 
 /* botaooo */

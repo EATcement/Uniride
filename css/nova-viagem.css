@@ -98,6 +98,18 @@ nav {
   background-color: white;
 }
 
+.logo {
+    display: flex;
+    align-items: center; /* Alinha o ícone e o texto no meio */
+    gap: 10px; /* Dá um espaço entre o ícone e a palavra */
+}
+
+/* Adicione essa nova classe para controlar o tamanho do ícone */
+.icone-logo {
+    width: 30px; /* Ajuste esse valor para deixar o ícone maior ou menor */
+    height: auto;
+}
+
 
 body > div:not(.swal2-container) {
   background: rgba(43, 44, 68, 0.4);
