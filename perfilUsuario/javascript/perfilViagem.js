@@ -1,127 +1,130 @@
 document.addEventListener("DOMContentLoaded", () => {
-    //valida_sessao();
-    
-    if (document.getElementById("listaViagem")) {
-        carregarDadosViagem();
-    }
+    carregarViagens();
 });
 
-const diasSemana = {
-    0: 'Domingo',
-    1: 'Segunda',
-    2: 'Terça',
-    3: 'Quarta',
-    4: 'Quinta',
-    5: 'Sexta',
-    6: 'Sábado'
-};
+async function carregarViagens() {
+    try {
+        // perfilViagem.php está em perfilUsuario/php/
+        const response = await fetch("../php/perfilViagem.php");
+        const resposta = await response.json();
 
-async function carregarDadosViagem() {
-    const retorno = await fetch("../php/perfilViagem.php");
-    const resposta = await retorno.json();
+        const container   = document.getElementById("listaViagem");
+        const semViagens  = document.getElementById("SemViagensCadastradas");
 
-    if (resposta.status == "ok") {
-        const registros = resposta.data;
+        if (!container) return;
 
-        // agrupa por id da viagem
+        if (resposta.status !== "ok" || resposta.data.length === 0) {
+            if (semViagens) semViagens.textContent = "Você ainda não cadastrou nenhum grupo.";
+            container.innerHTML = "";
+            return;
+        }
+
+        if (semViagens) semViagens.textContent = "";
+
+        // Agrupa registros por id (viagens recorrentes têm uma linha por dia)
         const grupos = {};
-        registros.forEach(objeto => {
-            if (!grupos[objeto.id]) {
-                grupos[objeto.id] = { ...objeto, dias: [] };
+        resposta.data.forEach(reg => {
+            if (!grupos[reg.id]) {
+                grupos[reg.id] = { ...reg, dias: [] };
             }
-            if (objeto.dia_semana !== null) {
-                grupos[objeto.id].dias.push({
-                    dia: objeto.dia_semana,
-                    hora: objeto.hora_recorrencia,
-                    data_inicio: objeto.data_inicio
+            if (reg.dia_semana !== null && reg.dia_semana !== undefined) {
+                grupos[reg.id].dias.push({
+                    dia:         reg.dia_semana,
+                    hora:        reg.hora_recorrencia,
+                    data_inicio: reg.data_inicio
                 });
             }
         });
 
-        let html = "";
+        const diasSemana = {
+            0: 'Domingo', 1: 'Segunda', 2: 'Terça', 3: 'Quarta',
+            4: 'Quinta',  5: 'Sexta',   6: 'Sábado'
+        };
 
-        Object.values(grupos).forEach(objeto => {
-            let recorrenciaHTML = "";
+        let html = '';
 
-            if (objeto.tipoRecorrencia === 'recorrente' && objeto.dias.length > 0) {
-                recorrenciaHTML = `
-                    <p style="margin: 8px 0;">
-                        <strong style="color: #bdc3c7;">Dias:</strong>
-                        <span style="color: #ffffff;">${objeto.dias.map(d => diasSemana[d.dia]).join(', ')}</span>
-                    </p>
-                    <p style="margin: 8px 0;">
-                        <strong style="color: #bdc3c7;">Horário:</strong>
-                        <span style="color: #ffffff;">${objeto.dias[0].hora}</span>
-                    </p>
-                    <p style="margin: 8px 0;">
-                        <strong style="color: #bdc3c7;">A partir de:</strong>
-                        <span style="color: #ffffff;">${objeto.dias[0].data_inicio}</span>
-                    </p>`;
+        Object.values(grupos).forEach(reg => {
+            // Recorrência
+            let recorrenciaHtml = '';
+            if (reg.tipoRecorrencia === 'recorrente' && reg.dias.length > 0) {
+                recorrenciaHtml = `
+                    <p><strong>Dias:</strong> ${reg.dias.map(d => diasSemana[d.dia]).join(', ')}</p>
+                    <p><strong>Horário:</strong> ${reg.dias[0].hora}</p>
+                    <p><strong>A partir de:</strong> ${reg.dias[0].data_inicio}</p>`;
             } else {
-                recorrenciaHTML = `
-                    <p style="margin: 8px 0;">
-                        <strong style="color: #bdc3c7;">Data e Hora:</strong>
-                        <span style="color: #ffffff;">${objeto.dataHora ?? '-'}</span>
-                    </p>`;
+                recorrenciaHtml = `<p><strong>Data e Hora:</strong> ${reg.dataHora ?? '-'}</p>`;
             }
 
+            const tipoExibido = (reg.tipoCarona === 'motorista')
+                ? 'Oferta de carona'
+                : 'Solicitação de carona';
+
             html += `
-                <div style="background: #1e2d3b; border: 1px solid #2a3b4c; padding: 15px; margin-bottom: 15px; border-radius: 8px; color: #ffffff; font-family: sans-serif; box-shadow: 0 4px 6px rgba(0,0,0,0.1);">
-                    <h2 style="color: #3498db; margin-top: 0; border-bottom: 1px solid #2a3b4c; padding-bottom: 8px;">${objeto.titulo}</h2>
-
-                    <p style="margin: 8px 0;">
-                        <strong style="color: #bdc3c7;">Tipo de carona:</strong>
-                        <span style="color: #2ecc71; font-weight: bold;">${objeto.tipoCarona}</span>
-                    </p>
-                    <p style="margin: 8px 0;">
-                        <strong style="color: #bdc3c7;">Descrição:</strong>
-                        <span style="color: #ffffff;">${objeto.descricao}</span>
-                    </p>
-                    <p style="margin: 8px 0;">
-                        <strong style="color: #bdc3c7;">Partida:</strong>
-                        <span style="color: #ffffff;">${objeto.pontoPartida}</span>
-                    </p>
-                    <p style="margin: 8px 0;">
-                        <strong style="color: #bdc3c7;">Chegada:</strong>
-                        <span style="color: #ffffff;">${objeto.pontoChegada}</span>
-                    </p>
-                    <p style="margin: 8px 0;">
-                        <strong style="color: #bdc3c7;">Preço:</strong>
-                        <span style="color: #ffffff;">R$ ${objeto.preco}</span>
-                    </p>
-
-                    ${recorrenciaHTML}
-
-
-                    <div style="margin-top: 12px; display: center; gap: 8px;">
-                        <a href="../html/alterarViagem.html?id=${objeto.id}'" 
-                           style="background: #2980b9; color: white; border-radius: 4px; padding: 4px 10px; text-decoration: none; font-size: 0.9rem;">
-                            ✏️ Alterar
+                <div class="card-viagem" style="margin-bottom:16px; padding:14px;
+                     background:#1e2d3b; border:1px solid #2a3b4c; border-radius:8px; color:#fff;">
+                    <h3 style="color:#3498db; margin-top:0;">${reg.titulo}</h3>
+                    <p><strong>Tipo:</strong> ${tipoExibido}</p>
+                    <p><strong>Descrição:</strong> ${reg.descricao ?? '-'}</p>
+                    <p><strong>Partida:</strong> ${reg.pontoPartida}</p>
+                    <p><strong>Chegada:</strong> ${reg.pontoChegada}</p>
+                    ${recorrenciaHtml}
+                    <div style="display:flex; gap:8px; flex-wrap:wrap; margin-top:10px;">
+                        <a href="alterarViagem.html?id=${reg.id}"
+                           style="background:#e67e22; color:white; padding:6px 14px;
+                                  border-radius:4px; text-decoration:none; font-size:0.9rem;">
+                            ✏️ Editar
                         </a>
-                        <a href="#" onclick="excluirViagem(${objeto.id}"
-                           style="background: #dc3545; color: white; border-radius: 4px; padding: 4px 10px; text-decoration: none; font-size: 0.9rem;">
+                        <button onclick="excluirViagem(${reg.id})"
+                                style="background:#dc3545; color:white; padding:6px 14px;
+                                       border:none; border-radius:4px; cursor:pointer; font-size:0.9rem;">
                             🗑️ Excluir
-                        </a>
+                        </button>
                     </div>
-                    
                 </div>`;
         });
 
-        document.getElementById("listaViagem").innerHTML = html;
+        container.innerHTML = html;
 
-    } else {
-        console.log("Erro: " + resposta.mensagem);
-        document.getElementById("SemViagensCadastradas").innerHTML = "Nenhuma viagem cadastrada no momento.";
+    } catch (e) {
+        console.error("Erro ao carregar viagens:", e);
     }
-};
+}
 
 async function excluirViagem(id) {
-    const retorno = await fetch("../php/excluirViagem.php?id=" + id);
-    const resposta = await retorno.json();
-    if (resposta.status == "ok") {
-        console.log(resposta.mensagem);
-        window.location.reload();
-    } else {
-        console.log("Erro: " + resposta.mensagem);
+    const confirmado = await Swal.fire({
+        title: "Tem certeza?",
+        text: "Isso removerá o grupo e todas as solicitações associadas.",
+        icon: "warning",
+        showCancelButton: true,
+        confirmButtonText: "Sim, excluir",
+        cancelButtonText: "Cancelar",
+        confirmButtonColor: "#dc3545",
+        cancelButtonColor: "#636e72"
+    });
+
+    if (!confirmado.isConfirmed) return;
+
+    try {
+        const response = await fetch(`../php/excluirViagem.php?id=${id}`, { method: "POST" });
+        const resultado = await response.json();
+
+        if (resultado.status === "ok") {
+            Swal.fire({
+                title: "Excluído!",
+                text: resultado.mensagem,
+                icon: "success",
+                confirmButtonColor: "#ff2448"
+            });
+            carregarViagens();
+        } else {
+            Swal.fire({
+                title: "Erro!",
+                text: resultado.mensagem,
+                icon: "error",
+                confirmButtonColor: "#ff2448"
+            });
+        }
+    } catch (e) {
+        console.error("Erro ao excluir:", e);
     }
 }

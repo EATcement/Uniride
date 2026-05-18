@@ -163,3 +163,9 @@ CREATE TABLE mensagem (
     FOREIGN KEY (viagem_id) REFERENCES grupo_viagem(id) ON DELETE CASCADE,
     FOREIGN KEY (usuario_id) REFERENCES usuario(id_usuario) ON DELETE CASCADE
 );
+
+ALTER TABLE grupo_viagem
+    ADD COLUMN capacidade INT NULL COMMENT 'Limite de passageiros no grupo',
+    ADD COLUMN veiculo_id INT NULL COMMENT 'Veículo que será usado na viagem',
+    ADD CONSTRAINT fk_grupo_veiculo
+        FOREIGN KEY (veiculo_id) REFERENCES veiculo(id) ON DELETE SET NULL;

@@ -1,3 +1,4 @@
+
 const campos = [
     { id: "titulo",       erro: "erroTitulo",       msg: "*Informe o título." },
     { id: "descricao",    erro: "erroDescricao",    msg: "*Informe a descrição." },
@@ -5,104 +6,165 @@ const campos = [
     { id: "pontoChegada", erro: "erroPontoChegada", msg: "*Informe o ponto de chegada." },
 ];
 
-const campoPreco = { id: "preco", erro: "erroPreco", msg: "*Informe o preço." };
-
 document.addEventListener('DOMContentLoaded', () => {
     verificarMotorista();
+    toggleRecorrencia(); // garante estado inicial correto
 
-    document.getElementById("enviar").addEventListener('click', function () {
-        novo();
-    });
+    document.getElementById("enviar").addEventListener('click', novo);
 
-    document.getElementById("tipoRecorrencia").addEventListener('change', function () {
-        toggleRecorrencia();
-    });
+    document.getElementById("tipoRecorrencia").addEventListener('change', toggleRecorrencia);
 });
 
+
 function toggleRecorrencia() {
-    const tipo = document.getElementById('tipoRecorrencia').value;
-    const camposRec = document.getElementById('camposRecorrencia');
-    const dataHoraDiv = document.getElementById('dataHora').parentElement;
+    const tipo        = document.getElementById('tipoRecorrencia').value;
+    const camposRec   = document.getElementById('camposRecorrencia');
+    const divDataHora = document.getElementById('divDataHora');
+    const erroDataHora = document.getElementById('erroDataHora');
 
     if (tipo === 'recorrente') {
-        camposRec.style.display = 'block';
-        dataHoraDiv.style.display = 'none';
-        document.getElementById('erroDataHora').style.display = 'none';
+        camposRec.style.display   = 'block';
+        divDataHora.style.display = 'none';
+        erroDataHora.style.display = 'none';
     } else {
-        camposRec.style.display = 'none';
-        dataHoraDiv.style.display = 'block';
+        camposRec.style.display   = 'none';
+        divDataHora.style.display = 'block';
     }
 }
 
 async function verificarMotorista() {
-    console.log("Verificando se usuário é motorista...");
-    const retornoMotorista = await fetch("../php/verificaMotorista.php");
-    const respostaMotorista = await retornoMotorista.json();
-    console.log("Resposta do servidor:", respostaMotorista);
+    try {
+        const retorno  = await fetch("../php/verificaMotorista.php");
+        const resposta = await retorno.json();
 
-    if (respostaMotorista.motorista == true) {
-        mostrarOpMotorista();
+        if (resposta.motorista == true) {
 
-        document.getElementById("tipoCarona").addEventListener('change', function () {
-            var tipoCarona = this.value;
+            document.getElementById("OpMotorista").style.display = "block";
 
-            if (tipoCarona == "motorista") {
-                document.getElementById("OpPreco").style.display = "block";
-            } else {
-                document.getElementById("OpPreco").style.display = "none";
-                document.getElementById(campoPreco.erro).style.display = "none"; // limpa erro ao esconder
-            }
-        });
+
+            await carregarVeiculos();
+
+            document.getElementById("tipoCarona").addEventListener('change', function () {
+                const opSection = document.getElementById("OpPrecoCapacidade");
+                if (this.value === "motorista") {
+                    opSection.style.display = "block";
+                } else {
+                    opSection.style.display = "none";
+   
+                    document.getElementById("erroPreco").style.display      = "none";
+                    document.getElementById("erroCapacidade").style.display = "none";
+                }
+            });
+        }
+    } catch (e) {
+        console.error("Erro ao verificar motorista:", e);
     }
 }
+
+// CARREGA VEÍCULOS DO MOTORISTA PRA PODER ESCOLHER
+
+async function carregarVeiculos() {
+    const select = document.getElementById("veiculo_id");
+    if (!select) return;
+
+    try {
+        const res      = await fetch("../php/getVeiculosMotorista.php");
+        const resposta = await res.json();
+
+        if (resposta.status !== "ok" || resposta.data.length === 0) {
+            select.innerHTML = `<option value="">Nenhum veículo cadastrado — cadastre um em seu perfil</option>`;
+            return;
+        }
+
+        let options = `<option value="">-- Selecionar veículo --</option>`;
+        resposta.data.forEach(v => {
+            const cap   = v.capacidade ?? "?";
+            const label = `${v.marca} ${v.modelo} (${v.ano}) — ${v.placa} | Cap. ${cap}`;
+            options += `<option value="${v.id}" data-capacidade="${v.capacidade ?? ''}">${label}</option>`;
+        });
+
+        select.innerHTML = options;
+
+        // PEGA A CAPACIDADE DO VEICULO E PREENCHE AUTOMATICAMENTE O CAMPO DE CAPACIDADE
+        select.addEventListener("change", function () {
+            const opt = this.options[this.selectedIndex];
+            const cap = opt.getAttribute("data-capacidade");
+            const campoCap = document.getElementById("capacidade");
+            if (campoCap && cap) campoCap.value = cap;
+        });
+
+    } catch (e) {
+        console.error("Erro ao carregar veículos:", e);
+        if (select) select.innerHTML = `<option value="">Erro ao carregar veículos</option>`;
+    }
+}
+
 
 async function novo() {
     if (!validarCampos()) return;
 
     const fd = new FormData();
 
-    var titulo       = document.getElementById("titulo").value;
-    var descricao    = document.getElementById("descricao").value;
-    var pontoPartida = document.getElementById("pontoPartida").value;
-    var pontoChegada = document.getElementById("pontoChegada").value;
-    var dataHora     = document.getElementById("dataHora").value;
-    var tipoCarona   = document.getElementById("tipoCarona").value || "passageiro";
-    var preco        = tipoCarona == "motorista" ? document.getElementById("preco").value : 0;
-    var tipoRecorrencia = document.getElementById('tipoRecorrencia').value;
+    const tipoRecorrencia = document.getElementById("tipoRecorrencia").value;
 
-    fd.append('titulo',       titulo);
-    fd.append('descricao',    descricao);
-    fd.append('pontoPartida', pontoPartida);
-    fd.append('pontoChegada', pontoChegada);
-    fd.append('dataHora',     dataHora);
-    fd.append('preco',        preco);
-    fd.append('tipoCarona',   tipoCarona);
-    fd.append('tipoRecorrencia',   tipoRecorrencia);
+    const selectTipo  = document.getElementById("tipoCarona");
+    const tipoCarona  = (selectTipo && document.getElementById("OpMotorista").style.display !== "none")
+                        ? selectTipo.value
+                        : "passageiro";
 
+    fd.append('titulo',          document.getElementById("titulo").value);
+    fd.append('descricao',       document.getElementById("descricao").value);
+    fd.append('pontoPartida',    document.getElementById("pontoPartida").value);
+    fd.append('pontoChegada',    document.getElementById("pontoChegada").value);
+    fd.append('tipoRecorrencia', tipoRecorrencia);
+    fd.append('tipoCarona',      tipoCarona);
 
-    if (tipoRecorrencia === 'recorrente') {
-            const dias = Array.from(document.querySelectorAll('input[name="dias[]"]:checked')).map(cb => cb.value);
-            fd.append('hora',        document.getElementById('hora').value);
-            fd.append('data_inicio', document.getElementById('data_inicio').value);
-            dias.forEach(dia => fd.append('dias[]', dia));
-        }
-
-    const retorno  = await fetch("../php/novaViagem.php", { method: "POST", body: fd });
-    const resposta = await retorno.json();
-
-    if (resposta.status == "ok") {
-        await Swal.fire({
-            title: "Sucesso!",
-            text: resposta.mensagem,
-            icon: "success",
-            confirmButtonText: "OK",
-            confirmButtonColor: "#ff2448"
-        });
-        window.location.href = "../html/index.html";
+    if (tipoRecorrencia === 'avulsa') {
+        fd.append('dataHora', document.getElementById("dataHora").value);
     } else {
+        const dias = Array.from(document.querySelectorAll('input[name="dias[]"]:checked'))
+                         .map(cb => cb.value);
+        dias.forEach(dia => fd.append('dias[]', dia));
+        fd.append('hora',        document.getElementById('hora').value);
+        fd.append('data_inicio', document.getElementById('data_inicio').value);
+    }
+
+    // Campos exclusivos do motorista
+    if (tipoCarona === "motorista") {
+        fd.append('preco',      document.getElementById("preco").value || 0);
+        fd.append('capacidade', document.getElementById("capacidade").value || "");
+        fd.append('veiculo_id', document.getElementById("veiculo_id").value || "");
+    } else {
+        fd.append('preco', 0);
+    }
+
+    try {
+        const retorno  = await fetch("../php/novaViagem.php", { method: "POST", body: fd });
+        const resposta = await retorno.json();
+
+        if (resposta.status === "ok") {
+            await Swal.fire({
+                title: "Sucesso!",
+                text: resposta.mensagem,
+                icon: "success",
+                confirmButtonText: "OK",
+                confirmButtonColor: "#ff2448"
+            });
+            window.location.href = "../html/index.html";
+        } else {
+            Swal.fire({
+                title: "Erro!",
+                text: resposta.mensagem,
+                icon: "error",
+                confirmButtonText: "OK",
+                confirmButtonColor: "#ff2448"
+            });
+        }
+    } catch (e) {
+        console.error("Erro ao enviar:", e);
         Swal.fire({
-            title: "ERRO!",
-            text: resposta.mensagem,
+            title: "Erro!",
+            text: "Falha na comunicação com o servidor.",
             icon: "error",
             confirmButtonText: "OK",
             confirmButtonColor: "#ff2448"
@@ -110,20 +172,19 @@ async function novo() {
     }
 }
 
-function mostrarOpMotorista() {
-    var x = document.getElementById("OpMotorista");
-    x.style.display = x.style.display === "none" ? "block" : "none";
-}
 
 function validarCampos() {
     let valido = true;
-    const tipoCarona = document.getElementById("tipoCarona").value;
     const tipoRecorrencia = document.getElementById("tipoRecorrencia").value;
+    const selectTipo      = document.getElementById("tipoCarona");
+    const tipoCarona      = (selectTipo && document.getElementById("OpMotorista").style.display !== "none")
+                            ? selectTipo.value
+                            : "passageiro";
 
+    // Campos obrigatórios básicos
     for (const campo of campos) {
         const valor  = document.getElementById(campo.id).value.trim();
         const erroEl = document.getElementById(campo.erro);
-
         if (!valor) {
             erroEl.textContent   = campo.msg;
             erroEl.style.display = "block";
@@ -133,11 +194,10 @@ function validarCampos() {
         }
     }
 
-    // Valida dataHora só se for avulsa
     const erroDataHora = document.getElementById("erroDataHora");
     if (tipoRecorrencia === 'avulsa') {
-        const valorDataHora = document.getElementById("dataHora").value.trim();
-        if (!valorDataHora) {
+        const dt = document.getElementById("dataHora").value.trim();
+        if (!dt) {
             erroDataHora.textContent   = "*Informe a data e hora.";
             erroDataHora.style.display = "block";
             valido = false;
@@ -146,15 +206,16 @@ function validarCampos() {
         }
     } else {
         erroDataHora.style.display = "none";
-    }
 
-    // Valida campos de recorrência se for recorrente
-    if (tipoRecorrencia === 'recorrente') {
-        const dias = document.querySelectorAll('input[name="dias[]"]:checked');
-        const hora = document.getElementById('hora').value.trim();
-        const data_inicio = document.getElementById('data_inicio').value.trim();
+        // Valida campos de recorrência
+        const dias       = document.querySelectorAll('input[name="dias[]"]:checked');
+        const hora       = document.getElementById('hora').value.trim();
+        const dataInicio = document.getElementById('data_inicio').value.trim();
 
-        const erroDias = document.getElementById('erroDias');
+        const erroDias    = document.getElementById('erroDias');
+        const erroHora    = document.getElementById('erroHora');
+        const erroDataIni = document.getElementById('erroDataInicio');
+
         if (dias.length === 0) {
             erroDias.textContent   = '*Selecione ao menos um dia.';
             erroDias.style.display = 'block';
@@ -162,8 +223,6 @@ function validarCampos() {
         } else {
             erroDias.style.display = 'none';
         }
-
-        const erroHora = document.getElementById('erroHora');
         if (!hora) {
             erroHora.textContent   = '*Informe o horário.';
             erroHora.style.display = 'block';
@@ -171,30 +230,38 @@ function validarCampos() {
         } else {
             erroHora.style.display = 'none';
         }
-
-        const erroDataInicio = document.getElementById('erroDataInicio');
-        if (!data_inicio) {
-            erroDataInicio.textContent   = '*Informe a data de início.';
-            erroDataInicio.style.display = 'block';
+        if (!dataInicio) {
+            erroDataIni.textContent   = '*Informe a data de início.';
+            erroDataIni.style.display = 'block';
             valido = false;
         } else {
-            erroDataInicio.style.display = 'none';
+            erroDataIni.style.display = 'none';
         }
     }
 
-    // Valida preço apenas se for motorista
-    const erroPreco = document.getElementById(campoPreco.erro);
-    if (tipoCarona == "motorista") {
-        const valorPreco = document.getElementById(campoPreco.id).value.trim();
-        if (!valorPreco) {
-            erroPreco.textContent   = campoPreco.msg;
+    // Validações exclusivas do motorista
+    if (tipoCarona === "motorista") {
+        const preco      = document.getElementById("preco").value.trim();
+        const capacidade = document.getElementById("capacidade").value.trim();
+
+        const erroPreco      = document.getElementById("erroPreco");
+        const erroCapacidade = document.getElementById("erroCapacidade");
+
+        if (!preco) {
+            erroPreco.textContent   = "*Informe o preço.";
             erroPreco.style.display = "block";
             valido = false;
         } else {
             erroPreco.style.display = "none";
         }
-    } else {
-        erroPreco.style.display = "none";
+
+        if (!capacidade || parseInt(capacidade) < 1) {
+            erroCapacidade.textContent   = "*Informe a capacidade (mínimo 1).";
+            erroCapacidade.style.display = "block";
+            valido = false;
+        } else {
+            erroCapacidade.style.display = "none";
+        }
     }
 
     return valido;
