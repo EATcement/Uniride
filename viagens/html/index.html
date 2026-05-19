@@ -19,26 +19,50 @@
 
     <div>
         <h3 id="boasVindas"></h3>
-        <p>Aqui estão as caronas disponíveis</p>
+
+        <br><br>
+
+        <button id="novaViagem" class="button">Adicionar grupo de viagem</button>
+
+        <br><br><br>
+        <hr>
+        <br><br><br>
+
+
+        <p>Tipo de oferta desejado: </p>
+        <div class="filtro-tipo">
+            <label class="filtro-opcao">
+                <input type="radio" name="filtroTipo" value="todos" checked> Solicitação e Oferta
+            </label>
+
+            <label class="filtro-opcao">
+                <input type="radio" name="filtroTipo" value="passageiro"> Somente Solicitação
+            </label>
+
+            <label class="filtro-opcao">
+                <input type="radio" name="filtroTipo" value="motorista"> Somente Oferta
+            </label>
+        </div>
+
+        <br><br>
+
+        <p>Endereço de partida ou chegada:</p>
         <section class="container">
             <input type="text" id="buscarCarona" placeholder="Ex: Rua Imaculada da Conceição...">
         </section>
 
         <br>
 
-        <button id="novaViagem" class="button">Adicionar grupo de viagem</button>
-
-        <div id="areaViagens">
-            <div class="conteudo-tabela">
-                <div id="lista"></div> 
+        <div class="card-area-viagens">
+            <p class="card-area-titulo">Aqui estão as caronas disponíveis:</p>
+            <div id="areaViagens">
+                <div class="conteudo-tabela">
+                    <div id="lista"></div>
+                </div>
             </div>
+            <p id="semCaronasDisponiveis" style="display: none;"></p>
         </div>
 
-        <br><br>
-        
-        <div>
-            <p id="semCaronasDisponiveis"></p>
-        </div>
     </div>
         <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
         <script src="../javascript/getViagem.js"></script>

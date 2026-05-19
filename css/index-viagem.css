@@ -118,7 +118,7 @@ h3 {
 
 p {
   color: var(--color-secondary-gray);
-  margin-bottom: 2rem;
+  margin-bottom: 8px;
 }
 
 /* pesquisa */
@@ -277,7 +277,7 @@ button#novaViagem.button:hover {
 }
 
 .btn-passageiro {
-  background-color: #8d99ae;
+  background-color: #2b2c44;
   color: #ffffff;
 }
 
@@ -287,7 +287,7 @@ button#novaViagem.button:hover {
 }
 
 .btn-motorista {
-  background-color: #8d99ae;
+  background-color: #2b2c44;
   color: #ffffff;
 }
 
@@ -300,4 +300,51 @@ button#novaViagem.button:hover {
   background-color: #2b2c44;
   color: #8d99ae;
   cursor: not-allowed;
+}
+
+.filtro-tipo {
+    display: flex;
+    gap: 8px;
+    flex-wrap: wrap;
+    margin-top: 4px;
+}
+
+.filtro-opcao {
+    display: flex;
+    align-items: center;
+    gap: 4px;
+    padding: 6px 14px;
+    border: 1px solid #ccc;
+    border-radius: 20px;
+    cursor: pointer;
+    font-size: 0.875rem;
+    transition: background-color 0.2s, border-color 0.2s;
+}
+
+.filtro-opcao:has(input:checked) {
+    background: #ef233e;
+    border-color: #ef233e;
+    color: #fff;
+}
+
+.filtro-opcao input[type="radio"] {
+    display: none; /* esconde o bolinha, o estilo do label já indica seleção */
+}
+
+.card-area-viagens {
+    background: #1e1d34;
+    border-radius: 12px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+    padding: 24px;
+    margin-top: 16px;
+}
+
+.card-area-titulo {
+    font-weight: 600;
+    margin-bottom: 16px;
+}
+
+hr {
+    border: none;
+    border-top: 1px solid #6c638b;
 }
