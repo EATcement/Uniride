@@ -164,6 +164,8 @@ CREATE TABLE mensagem (
     FOREIGN KEY (usuario_id) REFERENCES usuario(id_usuario) ON DELETE CASCADE
 );
 
+-- Alterações tabelas para adicionar no modelo lógico e conceitual:
+
 ALTER TABLE grupo_viagem
     ADD COLUMN capacidade INT NULL COMMENT 'Limite de passageiros no grupo',
     ADD COLUMN veiculo_id INT NULL COMMENT 'Veículo que será usado na viagem',
