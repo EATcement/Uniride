@@ -119,7 +119,7 @@ async function carregarDados() {
 
                 let footerEstatico = '';
                 if (ehMinhaCarona) {
-                    footerEstatico = `<span class="tag-minha-carona">img src: Minha Carona</span>`;
+                    footerEstatico = `<span class="tag-minha-carona">Minha Carona</span>`;
                 } else if (jaEstaNoGrupo) {
                     footerEstatico = `<button disabled class="btn-ja-solicitado">✓ Já solicitado</button>`;
                 } else {
