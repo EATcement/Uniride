@@ -77,10 +77,10 @@ nav {
 }
 
 .icone-perfil {
-  width: 30px; /* Mesmo tamanho que a bolinha tinha */
+  width: 30px;
   height: 30px;
-  border-radius: 50%; /* Se o seu ícone for quadrado, isso deixa ele redondo. Se já for redondo, pode tirar! */
-  object-fit: cover; /* Garante que a imagem não fique esticada/espremida */
+  border-radius: 50%; 
+  object-fit: cover;
 }
 
 .nav-menu li a:hover {
@@ -94,13 +94,11 @@ nav {
 
 .logo {
     display: flex;
-    align-items: center; /* Alinha o ícone e o texto no meio */
-    gap: 10px; /* Dá um espaço entre o ícone e a palavra */
+    align-items: center; 
+    gap: 10px; 
 }
-
-/* Adicione essa nova classe para controlar o tamanho do ícone */
 .icone-logo {
-    width: 30px; /* Ajuste esse valor para deixar o ícone maior ou menor */
+    width: 30px; 
     height: auto;
 }
 

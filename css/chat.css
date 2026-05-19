@@ -221,12 +221,12 @@
 
         .logo {
     display: flex;
-    align-items: center; /* Alinha o ícone e o texto no meio */
-    gap: 10px; /* Dá um espaço entre o ícone e a palavra */
+    align-items: center; 
+    gap: 10px; 
 }
 
-/* Adicione essa nova classe para controlar o tamanho do ícone */
+
 .icone-logo {
-    width: 30px; /* Ajuste esse valor para deixar o ícone maior ou menor */
+    width: 30px; 
     height: auto;
 }
