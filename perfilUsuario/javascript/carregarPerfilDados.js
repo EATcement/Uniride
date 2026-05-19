@@ -9,10 +9,10 @@ const inputSenha = document.getElementById('perfilSenha');
 iconeOlho.addEventListener('click', () => {
     if (inputSenha.type === 'password') {
         inputSenha.type = 'text'; 
-        iconeOlho.innerText = '🙈'; 
+        iconeOlho.src = '../../assets/olho-fechado.png'; 
     } else {
         inputSenha.type = 'password'; 
-        iconeOlho.innerText = '👁️'; 
+        iconeOlho.src = '../../assets/olho.png';
     }
 });
 
@@ -75,7 +75,7 @@ async function carregarInformacoesPessoais() {
         }
     } catch (erro) {
         console.error("Erro crítico na requisição AJAX: ", erro);
-        document.getElementById("perfilNome").innerText = "Erro de Conexão";
+        document.getElementById("perfilNome").innerText = "Undefined";
     }
 }
 

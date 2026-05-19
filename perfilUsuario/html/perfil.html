@@ -24,8 +24,8 @@
                 
                 <input type="file" id="inputFoto" accept="image/*" style="display: none;">
                 
-                <button type="button" class="btn-editar-foto" onclick="document.getElementById('inputFoto').click();">✏️</button>
-                <button type="button" class="btn-remover-foto" id="btnRemoverFoto">🗑️</button>
+                <button type="button" class="btn-editar-foto" onclick="document.getElementById('inputFoto').click();"><img src="../../assets/icon-lapis.png" alt="Editar" style="width: 16px; height: 16px; object-fit: contain;"></button>
+                <button type="button" class="btn-remover-foto" id="btnRemoverFoto"><img src="../../assets/icon-lixeira.png" alt="Editar" style="width: 16px; height: 16px; object-fit: contain;"></button>
             </div>
             
             <div class="perfil-titulos">
@@ -45,7 +45,8 @@
                     <input type="password" id="perfilSenha" value="carregando..." disabled
                         style="background: transparent; border: none; color: var(--color-white); font-size: 1.1rem; width: 100px; outline: none;">
 
-                    <span id="iconeOlho" style="cursor: pointer; font-size: 1.2rem;">👁️</span>
+            <img id="iconeOlho" src="../../assets/olho.png" alt="Mostrar Senha" 
+                style="cursor: pointer; width: 20px; height: auto; object-fit: contain;">
                 </div>
             </div>
             <div class="dado-item">
