@@ -112,7 +112,18 @@ async function carregarGrupos() {
 }
 
 async function removerMembro(nomePassageiro, tituloViagem) {
-    if (!confirm(`Deseja realmente remover ${nomePassageiro} do grupo "${tituloViagem}"?`)) return;
+
+    const confirmacao = await Swal.fire({
+        title: "Remover passageiro?",
+        text: `Deseja realmente remover ${nomePassageiro} do grupo "${tituloViagem}"?`,
+        icon: "warning",
+        showCancelButton: true,
+        confirmButtonText: "Sim, remover",
+        cancelButtonText: "Cancelar",
+        confirmButtonColor: "#ff2448",
+    });
+
+    if (!confirmacao.isConfirmed) return;
 
     const response = await fetch("../php/removerMembro.php", {
         method: "POST",
@@ -124,6 +135,12 @@ async function removerMembro(nomePassageiro, tituloViagem) {
     if (resultado.status === "ok") {
         carregarGrupos();
     } else {
-        alert("Erro ao remover: " + resultado.mensagem);
+        await Swal.fire({
+        title: "Erro!",
+        text: "Erro ao remover: " + resultado.mensagem,
+        icon: "error",
+        confirmButtonText: "OK",
+        confirmButtonColor: "#ff2448"
+    });
     }
 }

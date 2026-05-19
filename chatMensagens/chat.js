@@ -7,20 +7,38 @@ document.addEventListener('DOMContentLoaded', async () => {
     await buscarUsuarioLogado();
 
     if (!grupoViagemId) {
-        Swal.fire({
-            title: "ERRO!",
-            text: "Grupo não identificado",
-            icon: "error",
-            confirmButtonText: "OK",
-            confirmButtonColor: "#ff2448"
-        }).then(() => {
-            window.location.href = "../perfilUsuario/html/perfil.html";
-    });
-    return;
-}
+        await new Promise((resolve) => {
+            Swal.fire({
+                title: "ERRO!",
+                text: "Grupo não identificado",
+                icon: "error",
+                confirmButtonText: "OK",
+                confirmButtonColor: "#ff2448"
+            }).then(() => {
+                window.location.href = "../perfilUsuario/html/perfil.html";
+                resolve();
+            });
+        });
+        return;
+    }
 
+    const acessoResponse = await fetch(`verificarAcesso.php?grupo_viagem_id=${grupoViagemId}`);
+    const acessoData = await acessoResponse.json();
+
+    if (acessoData.acesso !== true) {
+            Swal.fire({
+                title: "ERRO!",
+                text: "Você não tem permissão para acessar esse grupo",
+                icon: "error",
+                confirmButtonText: "OK",
+                confirmButtonColor: "#ff2448"
+            }).then(() => {
+                window.location.href = "../perfilUsuario/html/perfil.html";
+                return;
+            })
+        }
+        
     document.getElementById('titulo-grupo').innerHTML = "Grupo de viagem: " + grupoViagemId;
-
 
     await carregarMensagens();
     setInterval(carregarMensagens, 3000);

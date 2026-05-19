@@ -23,7 +23,7 @@ $titulo_viagem = $dadosInput['titulo_viagem'];
 try {
 
     $sql = "UPDATE solicitacao_viagem s
-            JOIN viagem v ON s.viagem_id = v.id
+            JOIN grupo_viagem v ON s.viagem_id = v.id
             JOIN usuario u_pass ON s.passageiro_id = u_pass.id_usuario
             SET s.status = 'recusado'
             WHERE u_pass.nome = ? 
