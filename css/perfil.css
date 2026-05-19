@@ -100,15 +100,157 @@ nav {
 
 .logo {
     display: flex;
-    align-items: center; /* Alinha o ícone e o texto no meio */
-    gap: 10px; /* Dá um espaço entre o ícone e a palavra */
+    align-items: center;
+    gap: 10px; 
 }
 
-/* Adicione essa nova classe para controlar o tamanho do ícone */
+
 .icone-logo {
-    width: 30px; /* Ajuste esse valor para deixar o ícone maior ou menor */
+    width: 30px; 
     height: auto;
 }
+
+/* --- infos pessoais--- */
+.perfil-info-container {
+    display: flex;
+    flex-direction: column;
+    text-align: left !important;
+}
+
+.perfil-cabecalho {
+    display: flex;
+    align-items: center;
+    gap: 1.5rem;
+    margin-bottom: 2rem;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+    padding-bottom: 1.5rem;
+}
+
+.foto-perfil {
+    width: 90px;
+    height: 90px;
+    border-radius: 50%;
+    object-fit: cover;
+    border: 3px solid var(--color-accent-red);
+    background-color: var(--color-primary-dark);
+}
+
+.perfil-titulos h2 {
+    font-size: 2rem;
+    color: var(--color-white);
+    margin-bottom: 0.2rem;
+}
+
+.perfil-status {
+    color: var(--color-accent-red);
+    font-weight: 600;
+    font-size: 1rem;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+}
+
+.perfil-dados-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 1.5rem;
+}
+
+.dado-item {
+    display: flex;
+    flex-direction: column;
+    gap: 0.4rem;
+}
+
+.dado-label {
+    font-size: 0.85rem;
+    color: var(--color-secondary-gray);
+    text-transform: uppercase;
+    font-weight: 600;
+}
+
+.dado-valor {
+    font-size: 1.1rem;
+    color: var(--color-white);
+}
+
+.dados-extras-motorista {
+    margin-top: 2rem;
+    padding-top: 1.5rem;
+    border-top: 1px dashed rgba(255, 255, 255, 0.2);
+}
+
+.titulo-motorista {
+    grid-column: 1 / -1;
+    color: var(--color-accent-red);
+    font-size: 1.2rem;
+    margin-bottom: 0.5rem;
+}
+
+/* --- Estilos para o Upload de Foto de Perfil --- */
+
+.avatar-container {
+    position: relative;
+    display: inline-block;
+}
+
+.foto-perfil {
+    width: 90px;
+    height: 90px;
+    border-radius: 50%;
+    object-fit: cover;
+    border: 3px solid var(--color-accent-red);
+    background-color: var(--color-primary-dark);
+    display: block;
+}
+
+.btn-editar-foto {
+    position: absolute;
+    bottom: 0;
+    right: 0;
+    background-color: var(--color-accent-red);
+    color: white;
+    border: none;
+    border-radius: 50%;
+    width: 32px;
+    height: 32px;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.4);
+    transition: var(--transition);
+    font-size: 0.9rem;
+}
+
+.btn-editar-foto:hover {
+    background-color: var(--color-accent-red-dark);
+    transform: scale(1.1); 
+}
+
+.btn-remover-foto {
+    position: absolute;
+    bottom: 0;
+    left: 0; 
+    background-color: #dc3545; 
+    color: white;
+    border: none;
+    border-radius: 50%;
+    width: 32px;
+    height: 32px;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.4);
+    transition: var(--transition);
+    font-size: 0.9rem;
+}
+
+.btn-remover-foto:hover {
+    background-color: #bd2130;
+    transform: scale(1.1);
+}
+
 
 /* cards */
 #perfil, 

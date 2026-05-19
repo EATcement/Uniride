@@ -16,9 +16,51 @@
         </ul>
         </div>
     </nav>
+<!--testando trem de perfil-->
+    <div id="perfil" class="perfil-info-container">
+        <div class="perfil-cabecalho">
+            <div class="avatar-container">
+                <img src="../../assets/icon-pessoa.png" alt="Foto de Perfil" id="perfilFoto" class="foto-perfil">
+                
+                <input type="file" id="inputFoto" accept="image/*" style="display: none;">
+                
+                <button type="button" class="btn-editar-foto" onclick="document.getElementById('inputFoto').click();">✏️</button>
+                <button type="button" class="btn-remover-foto" id="btnRemoverFoto">🗑️</button>
+            </div>
+            
+            <div class="perfil-titulos">
+                <h2 id="perfilNome">Carregando...</h2>
+                <p id="perfilStatus" class="perfil-status">Passageiro</p>
+            </div>
+        </div>
 
-    <div id="perfil">
-        <p>Seja bem vindo!</p>
+        <div class="perfil-dados-grid">
+            <div class="dado-item">
+                <span class="dado-label">Email:</span>
+                <span class="dado-valor" id="perfilEmail">carregando...</span>
+            </div>
+            <div class="dado-item">
+                <span class="dado-label">Senha:</span>
+                <div style="display: flex; align-items: center; gap: 10px;">
+                    <input type="password" id="perfilSenha" value="carregando..." disabled
+                        style="background: transparent; border: none; color: var(--color-white); font-size: 1.1rem; width: 100px; outline: none;">
+
+                    <span id="iconeOlho" style="cursor: pointer; font-size: 1.2rem;">👁️</span>
+                </div>
+            </div>
+            <div class="dado-item">
+                <span class="dado-label">Data de Nasc:</span>
+                <span class="dado-valor" id="perfilDataNasc">carregando...</span>
+            </div>
+        </div>
+
+        <div id="dadosMotorista" class="perfil-dados-grid dados-extras-motorista" style="display: none;">
+            <h4 class="titulo-motorista">Informações de Motorista</h4>
+            <div class="dado-item">
+                <span class="dado-label">CNH:</span>
+                <span class="dado-valor" id="perfilCNH">carregando...</span>
+            </div>
+        </div>
     </div>
 
     <br><br><br>
@@ -83,5 +125,6 @@
     <script src="../javascript/perfilTornarMotorista.js"></script>
     <script src="../javascript/solicitacoes.js"></script>
     <script src="../javascript/carregarGrupos.js"></script>
+    <script src="../javascript/carregarPerfilDados.js"></script>
 </body>
 </html>

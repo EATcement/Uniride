@@ -171,3 +171,6 @@ ALTER TABLE grupo_viagem
     ADD COLUMN veiculo_id INT NULL COMMENT 'Veículo que será usado na viagem',
     ADD CONSTRAINT fk_grupo_veiculo
         FOREIGN KEY (veiculo_id) REFERENCES veiculo(id) ON DELETE SET NULL;
+
+--
+ALTER TABLE usuario ADD COLUMN foto_perfil VARCHAR(255) NULL;
