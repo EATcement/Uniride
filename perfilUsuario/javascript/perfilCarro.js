@@ -74,12 +74,14 @@ async function carregarDados() {
                         <strong style="color: #bdc3c7;">Categoria:</strong>
                         <span style="color: #ffffff;">${objeto.categoria}</span>
                     </p>
-
-                    <div style="margin-top: 12px; display: center; gap: 8px;">
+                    
+                    <div style="margin-top: 20px; display: flex; justify-content: center; gap: 12px;">                        
+                        
                         <a href="alterarCarro.html?id=${objeto.id}" 
-                           style="background: #2980b9; color: white; border-radius: 4px; padding: 4px 10px; text-decoration: none; font-size: 0.9rem;">
+                           style="background: #2980b9; color: white; border-radius: 4px; padding: 4px 10px; cursor:pointer; text-decoration: none; font-size: 0.9rem;">
                             ✏️ Alterar
                         </a>
+
                         <a href="#" onclick="excluirCarro(${objeto.id})"
                            style="background: #dc3545; color: white; border-radius: 4px; padding: 4px 10px; text-decoration: none; font-size: 0.9rem;">
                             🗑️ Excluir
