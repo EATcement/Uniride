@@ -1,11 +1,11 @@
 <?php
 
+
 header("Content-Type: application/json; charset=utf-8");
 session_start();
 include_once('../../php/conexao.php');
 
 $retorno = ['status' => '', 'mensagem' => '', 'data' => []];
-
 
 if (!isset($_SESSION['usuario_id'])) {
     if (isset($_SESSION['usuario'][0])) {
@@ -18,7 +18,6 @@ if (!isset($_SESSION['usuario_id'])) {
     }
 }
 
-//ID do grupo
 if (!isset($_GET['id']) || !is_numeric($_GET['id'])) {
     $retorno['status']   = 'nok';
     $retorno['mensagem'] = 'ID do grupo inválido ou ausente.';
@@ -29,7 +28,6 @@ if (!isset($_GET['id']) || !is_numeric($_GET['id'])) {
 $id_logado = (int) $_SESSION['usuario_id'];
 $id_grupo  = (int) $_GET['id'];
 
-// Busca dados atuais do grup
 $stmt = $conexao->prepare("SELECT usuario_id, tipoCarona FROM grupo_viagem WHERE id = ?");
 $stmt->bind_param("i", $id_grupo);
 $stmt->execute();
@@ -74,7 +72,7 @@ if ($eh_criador && ($eh_motorista_aceito || $criador_eh_motorista_do_grupo)) {
     exit;
 }
 
-// Monta o UPDATE conforme permissão 
+//5. Monta o UPDATE conforme permissão 
 $setClauses = [];
 $types      = '';
 $valores    = [];
@@ -98,7 +96,8 @@ if ($pode_editar_basico) {
     $tipoRecorrencia  = $_POST['tipoRecorrencia'] ?? 'avulsa';
     $setClauses[] = 'tipoRecorrencia = ?'; $types .= 's'; $valores[] = $tipoRecorrencia;
 
- 
+    $tipoCarona = $_POST['tipoCarona'] ?? 'passageiro';
+    $setClauses[] = 'tipoCarona = ?'; $types .= 's'; $valores[] = $tipoCarona;
 
     if ($tipoRecorrencia === 'avulsa') {
         if (empty($_POST['dataHora'])) {
@@ -120,7 +119,7 @@ if ($pode_editar_preco_capacidade) {
         }
     }
 
-    // Capacidade — valida limite mínimo de passageiros já aceitos
+    // Capacidade — valida mínimo (ocupantes aceitos) e máximo (capacidade do veículo)
     if (isset($_POST['capacidade']) && $_POST['capacidade'] !== '') {
         $capacidade = (int)$_POST['capacidade'];
 
@@ -131,6 +130,7 @@ if ($pode_editar_preco_capacidade) {
             exit;
         }
 
+        // Check 1 — não pode ser menor que o número de ocupantes já aceitos
         $stmtCont = $conexao->prepare("
             SELECT COUNT(*) AS total FROM solicitacao_viagem
             WHERE viagem_id = ? AND tipo_vaga = 'passageiro' AND status = 'aceito'
@@ -140,11 +140,39 @@ if ($pode_editar_preco_capacidade) {
         $totalPassageiros = (int)$stmtCont->get_result()->fetch_assoc()['total'];
         $stmtCont->close();
 
-        if ($capacidade < $totalPassageiros) {
+        if ($capacidade < ($totalPassageiros + 1)) {
             $retorno['status']   = 'nok';
-            $retorno['mensagem'] = "Não é possível definir capacidade para $capacidade: já há $totalPassageiros passageiro(s) aceito(s) no grupo.";
+            $retorno['mensagem'] = "Não é possível definir capacidade para $capacidade: já há " . ($totalPassageiros + 1) . " ocupante(s) no grupo.";;
             echo json_encode($retorno);
             exit;
+        }
+
+        $veiculo_id_check = (!empty($_POST['veiculo_id']) && is_numeric($_POST['veiculo_id']))
+            ? (int)$_POST['veiculo_id']
+            : null;
+
+        if ($veiculo_id_check === null) {
+            $stmtGrupoVeic = $conexao->prepare("SELECT veiculo_id FROM grupo_viagem WHERE id = ?");
+            $stmtGrupoVeic->bind_param("i", $id_grupo);
+            $stmtGrupoVeic->execute();
+            $rowGrupoVeic  = $stmtGrupoVeic->get_result()->fetch_assoc();
+            $stmtGrupoVeic->close();
+            $veiculo_id_check = $rowGrupoVeic['veiculo_id'] ?? null;
+        }
+
+        if ($veiculo_id_check !== null) {
+            $stmtCapVeic = $conexao->prepare("SELECT capacidade FROM veiculo WHERE id = ?");
+            $stmtCapVeic->bind_param("i", $veiculo_id_check);
+            $stmtCapVeic->execute();
+            $rowCapVeic  = $stmtCapVeic->get_result()->fetch_assoc();
+            $stmtCapVeic->close();
+
+            if ($rowCapVeic && $capacidade > (int)$rowCapVeic['capacidade']) {
+                $retorno['status']   = 'nok';
+                $retorno['mensagem'] = "Capacidade $capacidade excede a do veículo selecionado ({$rowCapVeic['capacidade']} lugares).";
+                echo json_encode($retorno);
+                exit;
+            }
         }
 
         $setClauses[] = 'capacidade = ?'; $types .= 'i'; $valores[] = $capacidade;
@@ -183,7 +211,7 @@ if (empty($setClauses)) {
     exit;
 }
 
-// ── 6. Executa o UPDATE ───────────────────────────────────────────────────────
+//Executa o UPDATE
 $sql     = "UPDATE grupo_viagem SET " . implode(', ', $setClauses) . " WHERE id = ?";
 $types  .= 'i';
 $valores[] = $id_grupo;

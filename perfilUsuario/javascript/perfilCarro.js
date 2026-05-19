@@ -36,13 +36,13 @@ async function carregarDados() {
             html += `
                 <div style="background: #1e2d3b; border: 1px solid #2a3b4c; padding: 15px; margin-bottom: 15px; border-radius: 8px; color: #ffffff; font-family: sans-serif; box-shadow: 0 4px 6px rgba(0,0,0,0.1);">
                     
-                    <h2 style="color: #3498db; margin-top: 0; border-bottom: 1px solid #2a3b4c; padding-bottom: 8px;">
+                    <h2 style="color: #3498db; margin-top: 0; border-bottom: 1px solid #2a3b4c; padding-bottom: 8px; text-transform: capitalize;">
                         🚗 ${objeto.marca} ${objeto.modelo}
                     </h2>
 
                     <p style="margin: 8px 0;">
-                        <strong style="color: #bdc3c7;">Placa:</strong>
-                        <span style="color: #2ecc71; font-weight: bold;">${objeto.placa}</span>
+                        <strong style="color: #bdc3c7; ">Placa:</strong>
+                        <span style="color: #2ecc71; font-weight: bold; text-transform: uppercase;">${objeto.placa}</span>
                     </p>
 
                     <p style="margin: 8px 0;">
@@ -57,7 +57,7 @@ async function carregarDados() {
 
                     <p style="margin: 8px 0;">
                         <strong style="color: #bdc3c7;">Cor:</strong>
-                        <span style="color: #ffffff;">${objeto.cor}</span>
+                        <span style="color: #ffffff; text-transform: capitalize;">${objeto.cor}</span>
                     </p>
 
                     <p style="margin: 8px 0;">
@@ -72,14 +72,16 @@ async function carregarDados() {
 
                     <p style="margin: 8px 0;">
                         <strong style="color: #bdc3c7;">Categoria:</strong>
-                        <span style="color: #ffffff;">${objeto.categoria}</span>
+                        <span style="color: #ffffff; text-transform: uppercase;">${objeto.categoria}</span>
                     </p>
-
-                    <div style="margin-top: 12px; display: center; gap: 8px;">
+                    
+                    <div style="margin-top: 20px; display: flex; justify-content: center; gap: 12px;">                        
+                        
                         <a href="alterarCarro.html?id=${objeto.id}" 
-                           style="background: #2980b9; color: white; border-radius: 4px; padding: 4px 10px; text-decoration: none; font-size: 0.9rem;">
+                           style="background: #2980b9; color: white; border-radius: 4px; padding: 4px 10px; cursor:pointer; text-decoration: none; font-size: 0.9rem;">
                             ✏️ Alterar
                         </a>
+
                         <a href="#" onclick="excluirCarro(${objeto.id})"
                            style="background: #dc3545; color: white; border-radius: 4px; padding: 4px 10px; text-decoration: none; font-size: 0.9rem;">
                             🗑️ Excluir

@@ -68,14 +68,15 @@ async function carregarViagens() {
                     <p><strong>Partida:</strong> ${reg.pontoPartida}</p>
                     <p><strong>Chegada:</strong> ${reg.pontoChegada}</p>
                     ${recorrenciaHtml}
-                    <div style="display:flex; gap:8px; flex-wrap:wrap; margin-top:10px;">
+                    
+                    <div style="margin-top: 20px; display: flex; justify-content: center; gap: 12px;">                        
                         <a href="alterarViagem.html?id=${reg.id}"
-                           style="background:#e67e22; color:white; padding:6px 14px;
+                           style="background:#2980b9; color:white; padding:4px 10px;
                                   border-radius:4px; text-decoration:none; font-size:0.9rem;">
-                            ✏️ Editar
+                            ✏️ Alterar
                         </a>
                         <button onclick="excluirViagem(${reg.id})"
-                                style="background:#dc3545; color:white; padding:6px 14px;
+                                style="background:#dc3545; color:white; padding:4px 10px;
                                        border:none; border-radius:4px; cursor:pointer; font-size:0.9rem;">
                             🗑️ Excluir
                         </button>

@@ -152,10 +152,10 @@ async function carregarDados() {
                         <h3>${objeto.titulo}</h3>
                     </div>
                     <div class="card-body">
-                        <p><strong>Tipo do grupo:</strong><br>${tipoExibido}</p>
+                        <p style="text-transform: capitalize;"><strong>Tipo do grupo:</strong><br>${tipoExibido}</p>
                         <p><strong>Descrição:</strong><br>${objeto.descricao}</p>
-                        <p><strong>Partida:</strong><br>${objeto.pontoPartida}</p>
-                        <p><strong>Chegada:</strong><br>${objeto.pontoChegada}</p>
+                        <p style="text-transform: capitalize;"><strong>Partida:</strong><br>${objeto.pontoPartida}</p>
+                        <p style="text-transform: capitalize;"><strong>Chegada:</strong><br>${objeto.pontoChegada}</p>
                         <p><strong>Preço:</strong><br>R$ ${objeto.preco ?? '0'}</p>
                         ${recorrenciaHtml}
                     </div>

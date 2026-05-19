@@ -58,10 +58,10 @@ async function carregarGrupos() {
             if (info.sou_dono || info.sou_motorista) {
                 botaoEditar = `
                     <a href="alterarViagem.html?id=${info.id}"
-                       style="background:#e67e22; color:white; border:none; border-radius:4px;
+                       style="background:#2980b9; color:white; border:none; border-radius:4px;
                               padding:4px 10px; cursor:pointer; text-decoration:none;
                               font-size:0.9rem; margin-left:8px;">
-                        ✏️ Editar
+                        ✏️ Alterar
                     </a>`;
             }
 
@@ -92,13 +92,14 @@ async function carregarGrupos() {
 
                     <br>
 
-                    <div style="display:flex; gap:8px; flex-wrap:wrap; align-items:center;">
+                    <div style="margin-top: 12px; display: flex; justify-content: center; gap: 12px;">
+                        ${botaoEditar}
+
                         <a href="../../chatMensagens/chat.html?grupo_viagem_id=${info.id}"
-                           style="background:#2980b9; color:white; border:none; border-radius:4px;
+                           style="background:#dc3545; color:white; border:none; border-radius:4px;
                                   padding:4px 10px; cursor:pointer; text-decoration:none; font-size:0.9rem;">
                             💬 Chat
                         </a>
-                        ${botaoEditar}
                     </div>
                 </div>`;
         });
