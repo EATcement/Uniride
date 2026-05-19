@@ -1,63 +1,53 @@
+
 document.addEventListener("DOMContentLoaded", () => {
     carregarPerfil();
-})
+});
+
 async function carregarPerfil() {
-    const retorno = await fetch("../../php/getPerfil.php");
+    const retorno  = await fetch("../../php/getPerfil.php");
     const resposta = await retorno.json();
 
     if (resposta.status === "ok") {
         const usuario = resposta.data;
-        document.getElementById("boasVindas").innerHTML = 
+        document.getElementById("boasVindas").innerHTML =
             `Bem vindo ao Uniride, <strong>${usuario.nome}</strong>!`;
     }
 }
 
-let usuarioLogadoId = null;
+let usuarioLogadoId   = null;
 let isMotoristaLogado = false;
 
 const diasSemana = {
-    0: 'Domingo',
-    1: 'Segunda',
-    2: 'Terça',
-    3: 'Quarta',
-    4: 'Quinta',
-    5: 'Sexta',
-    6: 'Sábado'
+    0: 'Domingo', 1: 'Segunda', 2: 'Terça', 3: 'Quarta',
+    4: 'Quinta',  5: 'Sexta',   6: 'Sábado'
 };
 
 document.addEventListener("DOMContentLoaded", async () => {
     await buscarUsuarioLogado();
 
     if (document.getElementById("lista")) {
-        await carregarDados(); 
-        
+        await carregarDados();
+
         const campoBusca = document.getElementById("buscarCarona");
-        if (campoBusca) {
-            campoBusca.addEventListener("input", carregarDados);
-        }
+        if (campoBusca) campoBusca.addEventListener("input", carregarDados);
     }
 });
 
 async function buscarUsuarioLogado() {
     try {
-        const response = await fetch("../../php/getSessao.php"); 
-        
+        const response = await fetch("../../php/getSessao.php");
         if (!response.ok) {
-            console.error("Não encontrou o arquivo de sessão. Status:", response.status);
+            console.error("Sessão não encontrada. Status:", response.status);
             return;
         }
-
         const dados = await response.json();
-        console.log("Dados recebidos da sessão:", dados); 
-
         if (dados.logado || dados.id || dados.usuario_id) {
-            usuarioLogadoId = dados.id || dados.usuario_id;
-            
-            const statusMotorista = dados.isMotorista ?? dados.motorista ?? 0;
-            isMotoristaLogado = (Number(statusMotorista) === 1);
+            usuarioLogadoId   = dados.id || dados.usuario_id;
+            const statusMot   = dados.isMotorista ?? dados.motorista ?? 0;
+            isMotoristaLogado = (Number(statusMot) === 1);
         }
     } catch (e) {
-        console.error("Erro ao ler a sessão no JS:", e);
+        console.error("Erro ao ler a sessão:", e);
     }
 }
 
@@ -69,13 +59,13 @@ if (botaoNovo) {
 }
 
 async function carregarDados() {
-    const retorno = await fetch("../php/getViagem.php");
+    const retorno  = await fetch("../php/getViagem.php");
     const resposta = await retorno.json();
 
-    if (resposta.status == "ok") {
+    if (resposta.status === "ok") {
         const filtro = document.getElementById("buscarCarona").value.toLowerCase().trim();
 
-        // agrupa os registros por id da viagem
+   
         const grupos = {};
         resposta.data.forEach(objeto => {
             if (!grupos[objeto.id]) {
@@ -83,8 +73,8 @@ async function carregarDados() {
             }
             if (objeto.dia_semana !== null) {
                 grupos[objeto.id].dias.push({
-                    dia: objeto.dia_semana,
-                    hora: objeto.hora_recorrencia,
+                    dia:         objeto.dia_semana,
+                    hora:        objeto.hora_recorrencia,
                     data_inicio: objeto.data_inicio
                 });
             }
@@ -104,8 +94,7 @@ async function carregarDados() {
 
         let html = '';
 
-        for (let i = 0; i < registros.length; i++) {
-            let objeto = registros[i];
+        for (const objeto of registros) {
             let acaoBotao = "";
 
             if (usuarioLogadoId && objeto.usuario_id == usuarioLogadoId) {
@@ -120,7 +109,8 @@ async function carregarDados() {
                 }
 
                 if (isMotoristaLogado && !jaEstaNoGrupo) {
-                    const temMotoristaAceito = Number(objeto.temMotorista);
+                    const temMotoristaAceito  = Number(objeto.temMotorista);
+                    // Vaga de motorista ocupada se: já tem motorista aceito OU o próprio criador é o motorista (oferta)
                     const vagaMotoristaOcupada = (temMotoristaAceito > 0 || objeto.tipoCarona === 'motorista');
 
                     if (vagaMotoristaOcupada) {
@@ -131,21 +121,20 @@ async function carregarDados() {
                 }
             }
 
-            // monta recorrência
+            // Recorrência
             let recorrenciaHtml = '';
             if (objeto.tipoRecorrencia === 'recorrente' && objeto.dias.length > 0) {
-                recorrenciaHtml = `<p><strong>Dias:</strong><br> ${objeto.dias.map(d => diasSemana[d.dia]).join(', ')}</p>
-                                   <p><strong>Horário:</strong><br> ${objeto.dias[0].hora}</p>
-                                   <p><strong>A partir de:</strong><br> ${objeto.dias[0].data_inicio}</p>`;
+                recorrenciaHtml = `
+                    <p><strong>Dias:</strong><br>${objeto.dias.map(d => diasSemana[d.dia]).join(', ')}</p>
+                    <p><strong>Horário:</strong><br>${objeto.dias[0].hora}</p>
+                    <p><strong>A partir de:</strong><br>${objeto.dias[0].data_inicio}</p>`;
             } else {
-                recorrenciaHtml = `<p><strong>Data e Hora:</strong><br> ${objeto.dataHora ?? '-'}</p>`;
+                recorrenciaHtml = `<p><strong>Data e Hora:</strong><br>${objeto.dataHora ?? '-'}</p>`;
             }
 
-            if (objeto.tipoCarona = "passageiro") {
-                tipoExibido = "Solicitação de carona"
-            } else {
-                tipoExibido = "Oferta de carona"
-            }
+            const tipoExibido = (objeto.tipoCarona === 'motorista')
+                ? 'Oferta de carona'
+                : 'Solicitação de carona';
 
             html += `
                 <div class="card-viagem">
@@ -157,14 +146,13 @@ async function carregarDados() {
                         <p><strong>Descrição:</strong><br>${objeto.descricao}</p>
                         <p><strong>Partida:</strong><br>${objeto.pontoPartida}</p>
                         <p><strong>Chegada:</strong><br>${objeto.pontoChegada}</p>
-                        <p><strong>Preço:</strong><br>R$ ${objeto.preco}</p>
+                        <p><strong>Preço:</strong><br>R$ ${objeto.preco ?? '0'}</p>
                         ${recorrenciaHtml}
                     </div>
                     <div class="card-footer">
                         ${acaoBotao}
                     </div>
-                </div>
-            `;
+                </div>`;
         }
 
         document.getElementById("lista").innerHTML = html;
@@ -174,16 +162,16 @@ async function carregarDados() {
     }
 }
 
-async function solicitarEntrada(viagemId, tipoVaga = 'passageiro') { 
+async function solicitarEntrada(viagemId, tipoVaga = 'passageiro') {
     if (!usuarioLogadoId) {
         alert("Você precisa estar logado!");
         return;
     }
 
     const dados = {
-        viagem_id: viagemId,
+        viagem_id:      viagemId,
         solicitante_id: usuarioLogadoId,
-        tipo_vaga: tipoVaga
+        tipo_vaga:      tipoVaga
     };
 
     try {
@@ -192,7 +180,6 @@ async function solicitarEntrada(viagemId, tipoVaga = 'passageiro') {
             headers: { "Content-Type": "application/json" },
             body: JSON.stringify(dados)
         });
-
         const result = await response.json();
         alert(result.mensagem);
         carregarDados();
