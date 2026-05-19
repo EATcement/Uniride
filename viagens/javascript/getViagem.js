@@ -119,7 +119,7 @@ async function carregarDados() {
 
                 let footerEstatico = '';
                 if (ehMinhaCarona) {
-                    footerEstatico = `<span class="tag-minha-carona">🚗 Minha Carona</span>`;
+                    footerEstatico = `<span class="tag-minha-carona">img src: Minha Carona</span>`;
                 } else if (jaEstaNoGrupo) {
                     footerEstatico = `<button disabled class="btn-ja-solicitado">✓ Já solicitado</button>`;
                 } else {
@@ -129,17 +129,22 @@ async function carregarDados() {
                 let botoesAcao = '';
                 if (!ehMinhaCarona && !jaEstaNoGrupo) {
                     botoesAcao += `
-                        <button class="btn-acao btn-passageiro" onclick="event.stopPropagation(); solicitarEntrada(${objeto.id}, 'passageiro')">
-                            🧑‍💼 Entrar como Passageiro
+                        <button class="btn-acao btn-passageiro" onclick="event.stopPropagation(); solicitarEntrada(${objeto.id}, 'passageiro')" style="display: flex; align-items: center; justify-content: center; gap: 8px;">
+                            <img src="../../assets/icon-passageiro.png" alt="Ícone" style="width: 18px; height: 18px; object-fit: contain;">
+                            Entrar como Passageiro
                         </button>`;
 
                     if (isMotoristaLogado) {
                         if (vagaMotoristaOcupada) {
-                            botoesAcao += `<button disabled class="btn-acao btn-motorista-ocupado">🚫 Motorista Ocupado</button>`;
+                            botoesAcao += `<button disabled class="btn-acao btn-motorista-ocupado" style="display: flex; align-items: center; justify-content: center; gap: 8px;">
+                                    <img src="../../assets/icon-bloqueado.png" alt="Ícone" style="width: 18px; height: 18px; object-fit: contain;">
+                                    Motorista Ocupado
+                                </button>`;
                         } else {
                             botoesAcao += `
-                                <button class="btn-acao btn-motorista" onclick="event.stopPropagation(); solicitarEntrada(${objeto.id}, 'motorista')">
-                                    🚗 Entrar como Motorista
+                                <button class="btn-acao btn-motorista" onclick="event.stopPropagation(); solicitarEntrada(${objeto.id}, 'motorista')" style="display: flex; align-items: center; justify-content: center; gap: 8px;">
+                                    <img src="../../assets/icon-carro.png" alt="Ícone" style="width: 18px; height: 18px; object-fit: contain;">
+                                    Entrar como Motorista
                                 </button>`;
                         }
                     }
