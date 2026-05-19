@@ -3,13 +3,31 @@ document.addEventListener("DOMContentLoaded", () => {
 });
 
 async function carregarPerfil() {
-    const retorno  = await fetch("../../php/getPerfil.php");
-    const resposta = await retorno.json();
+    try {
+        const retorno = await fetch("../../php/getPerfil.php");
+        const resposta = await retorno.json();
 
-    if (resposta.status === "ok") {
-        const usuario = resposta.data;
-        document.getElementById("boasVindas").innerHTML =
-            `Bem vindo ao Uniride, <strong>${usuario.nome}</strong>!`;
+        if (resposta.status === "ok") {
+            const usuario = resposta.data;
+            
+            // 1. Coloca o nome na mensagem de boas vindas com segurança
+            const textoBoasVindas = document.getElementById("boasVindas");
+            if (textoBoasVindas) {
+                textoBoasVindas.innerHTML = `Bem vindo ao Uniride, <strong>${usuario.nome}</strong>!`;
+            }
+
+            // 2. Coloca a foto na Navbar usando o caminho absoluto (/uniride/)
+            const imgNavbar = document.getElementById("navPerfilFoto");
+            if (imgNavbar) {
+                if (usuario.foto_perfil && usuario.foto_perfil !== "null" && usuario.foto_perfil !== "") {
+                    imgNavbar.src = "/uniride/a-fotos-usuarios/" + usuario.foto_perfil;
+                } else {
+                    imgNavbar.src = "../../assets/icon-pessoa.png";
+                }
+            }
+        }
+    } catch (erro) {
+        console.error("Erro ao carregar os dados do perfil na navbar:", erro);
     }
 }
 
@@ -29,10 +47,6 @@ document.addEventListener("DOMContentLoaded", async () => {
 
         const campoBusca = document.getElementById("buscarCarona");
         if (campoBusca) campoBusca.addEventListener("input", carregarDados);
-
-        document.querySelectorAll('input[name="filtroTipo"]').forEach(radio => {
-            radio.addEventListener("change", carregarDados);
-        });
     }
 });
 
@@ -62,127 +76,121 @@ if (botaoNovo) {
 }
 
 async function carregarDados() {
-    const retorno  = await fetch("../php/getViagem.php");
-    const resposta = await retorno.json();
+    try {
+        const retorno  = await fetch("../php/getViagem.php");
+        const resposta = await retorno.json();
 
-    if (resposta.status === "ok") {
-        const filtroTexto = document.getElementById("buscarCarona").value.toLowerCase().trim();
-        const filtroTipo  = document.querySelector('input[name="filtroTipo"]:checked')?.value ?? "todos";
+        if (resposta.status === "ok") {
+            const filtro = document.getElementById("buscarCarona").value.toLowerCase().trim();
 
-        const grupos = {};
-        resposta.data.forEach(objeto => {
-            if (!grupos[objeto.id]) {
-                grupos[objeto.id] = { ...objeto, dias: [] };
-            }
-            if (objeto.dia_semana !== null) {
-                grupos[objeto.id].dias.push({
-                    dia:         objeto.dia_semana,
-                    hora:        objeto.hora_recorrencia,
-                    data_inicio: objeto.data_inicio
-                });
-            }
-        });
+            const grupos = {};
+            resposta.data.forEach(objeto => {
+                if (!grupos[objeto.id]) {
+                    grupos[objeto.id] = { ...objeto, dias: [] };
+                }
+                if (objeto.dia_semana !== null) {
+                    grupos[objeto.id].dias.push({
+                        dia:         objeto.dia_semana,
+                        hora:        objeto.hora_recorrencia,
+                        data_inicio: objeto.data_inicio
+                    });
+                }
+            });
 
-        const registros = Object.values(grupos).filter(objeto => {
-            const passaTexto = objeto.pontoPartida.toLowerCase().includes(filtroTexto) ||
-                               objeto.pontoChegada.toLowerCase().includes(filtroTexto);
+            const registros = Object.values(grupos).filter(objeto =>
+                objeto.pontoPartida.toLowerCase().includes(filtro) ||
+                objeto.pontoChegada.toLowerCase().includes(filtro)
+            );
 
-            const passaTipo = filtroTipo === "todos" ||
-                              objeto.tipoCarona === filtroTipo;
-
-            return passaTexto && passaTipo;
-        });
-
-        const containerErro = document.getElementById("semCaronasDisponiveis");
-        if (registros.length === 0) {
-            const filtroTipoAtual = document.querySelector('input[name="filtroTipo"]:checked')?.value;
-            if (filtroTipoAtual === "motorista") {
-                containerErro.innerHTML = "Nenhuma oferta de carona encontrada no momento.";
+            const containerErro = document.getElementById("semCaronasDisponiveis");
+            if (registros.length === 0) {
+                if (containerErro) containerErro.innerHTML = "Nenhuma carona disponível para o local pesquisado.";
             } else {
-                containerErro.innerHTML = "Nenhuma carona disponível para o local pesquisado.";
-            }
-        } else {
-            containerErro.innerHTML = "";
-        }
-
-        let html = '';
-
-        for (const objeto of registros) {
-            const ehMinhaCarona        = (usuarioLogadoId && objeto.usuario_id == usuarioLogadoId);
-            const jaEstaNoGrupo        = (Number(objeto.ja_participa) === 1 || objeto.ja_participa === true);
-            const temMotoristaAceito   = Number(objeto.temMotorista);
-            const vagaMotoristaOcupada = (temMotoristaAceito > 0 || objeto.tipoCarona === 'motorista');
-
-            let footerEstatico = '';
-            if (ehMinhaCarona) {
-                footerEstatico = `<span class="tag-minha-carona">🚗 Minha Carona</span>`;
-            } else if (jaEstaNoGrupo) {
-                footerEstatico = `<button disabled class="btn-ja-solicitado">✓ Já solicitado</button>`;
-            } else {
-                footerEstatico = `<span class="hint-selecionar">Clique para selecionar esta carona</span>`;
+                if (containerErro) containerErro.innerHTML = "";
             }
 
-            let botoesAcao = '';
-            if (!ehMinhaCarona && !jaEstaNoGrupo) {
-                botoesAcao += `
-                    <button class="btn-acao btn-passageiro" onclick="event.stopPropagation(); solicitarEntrada(${objeto.id}, 'passageiro')">
-                        🧑‍💼 Entrar como Passageiro
-                    </button>`;
+            let html = '';
 
-                if (isMotoristaLogado) {
-                    if (vagaMotoristaOcupada) {
-                        botoesAcao += `<button disabled class="btn-acao btn-motorista-ocupado">🚫 Motorista Ocupado</button>`;
-                    } else {
-                        botoesAcao += `
-                            <button class="btn-acao btn-motorista" onclick="event.stopPropagation(); solicitarEntrada(${objeto.id}, 'motorista')">
-                                🚗 Entrar como Motorista
-                            </button>`;
+            for (const objeto of registros) {
+                const ehMinhaCarona = (usuarioLogadoId && objeto.usuario_id == usuarioLogadoId);
+                const jaEstaNoGrupo = (Number(objeto.ja_participa) === 1 || objeto.ja_participa === true);
+                const temMotoristaAceito = Number(objeto.temMotorista);
+                const vagaMotoristaOcupada = (temMotoristaAceito > 0 || objeto.tipoCarona === 'motorista');
+
+                let footerEstatico = '';
+                if (ehMinhaCarona) {
+                    footerEstatico = `<span class="tag-minha-carona">🚗 Minha Carona</span>`;
+                } else if (jaEstaNoGrupo) {
+                    footerEstatico = `<button disabled class="btn-ja-solicitado">✓ Já solicitado</button>`;
+                } else {
+                    footerEstatico = `<span class="hint-selecionar">Clique para selecionar esta carona</span>`;
+                }
+
+                let botoesAcao = '';
+                if (!ehMinhaCarona && !jaEstaNoGrupo) {
+                    botoesAcao += `
+                        <button class="btn-acao btn-passageiro" onclick="event.stopPropagation(); solicitarEntrada(${objeto.id}, 'passageiro')">
+                            🧑‍💼 Entrar como Passageiro
+                        </button>`;
+
+                    if (isMotoristaLogado) {
+                        if (vagaMotoristaOcupada) {
+                            botoesAcao += `<button disabled class="btn-acao btn-motorista-ocupado">🚫 Motorista Ocupado</button>`;
+                        } else {
+                            botoesAcao += `
+                                <button class="btn-acao btn-motorista" onclick="event.stopPropagation(); solicitarEntrada(${objeto.id}, 'motorista')">
+                                    🚗 Entrar como Motorista
+                                </button>`;
+                        }
                     }
                 }
-            }
 
-            let recorrenciaHtml = '';
-            if (objeto.tipoRecorrencia === 'recorrente' && objeto.dias.length > 0) {
-                recorrenciaHtml = `
-                    <p><strong>Dias:</strong><br>${objeto.dias.map(d => diasSemana[d.dia]).join(', ')}</p>
-                    <p><strong>Horário:</strong><br>${objeto.dias[0].hora}</p>
-                    <p><strong>A partir de:</strong><br>${objeto.dias[0].data_inicio}</p>`;
-            } else {
-                recorrenciaHtml = `<p><strong>Data e Hora:</strong><br>${objeto.dataHora ?? '-'}</p>`;
-            }
+                let recorrenciaHtml = '';
+                if (objeto.tipoRecorrencia === 'recorrente' && objeto.dias.length > 0) {
+                    recorrenciaHtml = `
+                        <p><strong>Dias:</strong><br>${objeto.dias.map(d => diasSemana[d.dia]).join(', ')}</p>
+                        <p><strong>Horário:</strong><br>${objeto.dias[0].hora}</p>
+                        <p><strong>A partir de:</strong><br>${objeto.dias[0].data_inicio}</p>`;
+                } else {
+                    recorrenciaHtml = `<p><strong>Data e Hora:</strong><br>${objeto.dataHora ?? '-'}</p>`;
+                }
 
-            const tipoExibido = (objeto.tipoCarona === 'motorista')
-                ? 'Oferta de carona'
-                : 'Solicitação de carona';
+                const tipoExibido = (objeto.tipoCarona === 'motorista')
+                    ? 'Oferta de carona'
+                    : 'Solicitação de carona';
 
-            const clicavel = (!ehMinhaCarona && !jaEstaNoGrupo) ? 'card-clicavel' : '';
+                const clicavel = (!ehMinhaCarona && !jaEstaNoGrupo) ? 'card-clicavel' : '';
 
-            html += `
-                <div class="card-viagem ${clicavel}" data-id="${objeto.id}" onclick="selecionarCard(this)">
-                    <div class="card-header">
-                        <h3>${objeto.titulo}</h3>
-                    </div>
-                    <div class="card-body">
-                        <p style="text-transform: capitalize;"><strong>Tipo do grupo:</strong><br>${tipoExibido}</p>
-                        <p><strong>Descrição:</strong><br>${objeto.descricao}</p>
-                        <p style="text-transform: capitalize;"><strong>Partida:</strong><br>${objeto.pontoPartida}</p>
-                        <p style="text-transform: capitalize;"><strong>Chegada:</strong><br>${objeto.pontoChegada}</p>
-                        <p><strong>Preço:</strong><br>R$ ${objeto.preco ?? '0'}</p>
-                        ${recorrenciaHtml}
-                    </div>
-                    <div class="card-footer">
-                        <div class="footer-estatico">${footerEstatico}</div>
-                        <div class="footer-acoes" style="display:none;">
-                            ${botoesAcao}
+                html += `
+                    <div class="card-viagem ${clicavel}" data-id="${objeto.id}" onclick="selecionarCard(this)">
+                        <div class="card-header">
+                            <h3>${objeto.titulo}</h3>
                         </div>
-                    </div>
-                </div>`;
+                        <div class="card-body">
+                            <p style="text-transform: capitalize;"><strong>Tipo do grupo:</strong><br>${tipoExibido}</p>
+                            <p><strong>Descrição:</strong><br>${objeto.descricao}</p>
+                            <p style="text-transform: capitalize;"><strong>Partida:</strong><br>${objeto.pontoPartida}</p>
+                            <p style="text-transform: capitalize;"><strong>Chegada:</strong><br>${objeto.pontoChegada}</p>
+                            <p><strong>Preço:</strong><br>R$ ${objeto.preco ?? '0'}</p>
+                            ${recorrenciaHtml}
+                        </div>
+                        <div class="card-footer">
+                            <div class="footer-estatico">${footerEstatico}</div>
+                            <div class="footer-acoes" style="display:none;">
+                                ${botoesAcao}
+                            </div>
+                        </div>
+                    </div>`;
+            }
+
+            const listaHTML = document.getElementById("lista");
+            if (listaHTML) listaHTML.innerHTML = html;
+
+        } else {
+            console.log("Erro ao carregar viagens: " + resposta.mensagem);
         }
-
-        document.getElementById("lista").innerHTML = html;
-
-    } else {
-        console.log("Erro: " + resposta.mensagem);
+    } catch (erro) {
+        console.error("Erro na requisição de viagens:", erro);
     }
 }
 
