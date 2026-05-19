@@ -1,4 +1,3 @@
-
 document.addEventListener("DOMContentLoaded", () => {
     carregarPerfil();
 });
@@ -95,28 +94,37 @@ async function carregarDados() {
         let html = '';
 
         for (const objeto of registros) {
-            let acaoBotao = "";
+            const ehMinhaCarona = (usuarioLogadoId && objeto.usuario_id == usuarioLogadoId);
+            const jaEstaNoGrupo = (Number(objeto.ja_participa) === 1 || objeto.ja_participa === true);
+            const temMotoristaAceito = Number(objeto.temMotorista);
+            const vagaMotoristaOcupada = (temMotoristaAceito > 0 || objeto.tipoCarona === 'motorista');
 
-            if (usuarioLogadoId && objeto.usuario_id == usuarioLogadoId) {
-                acaoBotao = "<span>Minha Carona</span>";
+            // Rodapé estático: só exibe mensagem fixa antes da seleção
+            let footerEstatico = '';
+            if (ehMinhaCarona) {
+                footerEstatico = `<span class="tag-minha-carona">🚗 Minha Carona</span>`;
+            } else if (jaEstaNoGrupo) {
+                footerEstatico = `<button disabled class="btn-ja-solicitado">✓ Já solicitado</button>`;
             } else {
-                const jaEstaNoGrupo = (Number(objeto.ja_participa) === 1 || objeto.ja_participa === true);
+                footerEstatico = `<span class="hint-selecionar">Clique para selecionar esta carona</span>`;
+            }
 
-                if (jaEstaNoGrupo) {
-                    acaoBotao = `<button disabled style="background:#7f8c8d; color:white; cursor:not-allowed;">✓ Já solicitado</button>`;
-                } else {
-                    acaoBotao = `<button onclick="solicitarEntrada(${objeto.id}, 'passageiro')">Entrar como Passageiro</button>`;
-                }
+            // Botões de ação (aparecem ao selecionar o card)
+            let botoesAcao = '';
+            if (!ehMinhaCarona && !jaEstaNoGrupo) {
+                botoesAcao += `
+                    <button class="btn-acao btn-passageiro" onclick="event.stopPropagation(); solicitarEntrada(${objeto.id}, 'passageiro')">
+                        🧑‍💼 Entrar como Passageiro
+                    </button>`;
 
-                if (isMotoristaLogado && !jaEstaNoGrupo) {
-                    const temMotoristaAceito  = Number(objeto.temMotorista);
-                    // Vaga de motorista ocupada se: já tem motorista aceito OU o próprio criador é o motorista (oferta)
-                    const vagaMotoristaOcupada = (temMotoristaAceito > 0 || objeto.tipoCarona === 'motorista');
-
+                if (isMotoristaLogado) {
                     if (vagaMotoristaOcupada) {
-                        acaoBotao += `<button disabled style="background:gray; color:white;">Motorista Ocupado</button>`;
+                        botoesAcao += `<button disabled class="btn-acao btn-motorista-ocupado">🚫 Motorista Ocupado</button>`;
                     } else {
-                        acaoBotao += `<button onclick="solicitarEntrada(${objeto.id}, 'motorista')" style="background:green; color:white;">Entrar como Motorista</button>`;
+                        botoesAcao += `
+                            <button class="btn-acao btn-motorista" onclick="event.stopPropagation(); solicitarEntrada(${objeto.id}, 'motorista')">
+                                🚗 Entrar como Motorista
+                            </button>`;
                     }
                 }
             }
@@ -136,8 +144,10 @@ async function carregarDados() {
                 ? 'Oferta de carona'
                 : 'Solicitação de carona';
 
+            const clicavel = (!ehMinhaCarona && !jaEstaNoGrupo) ? 'card-clicavel' : '';
+
             html += `
-                <div class="card-viagem">
+                <div class="card-viagem ${clicavel}" data-id="${objeto.id}" onclick="selecionarCard(this)">
                     <div class="card-header">
                         <h3>${objeto.titulo}</h3>
                     </div>
@@ -150,7 +160,10 @@ async function carregarDados() {
                         ${recorrenciaHtml}
                     </div>
                     <div class="card-footer">
-                        ${acaoBotao}
+                        <div class="footer-estatico">${footerEstatico}</div>
+                        <div class="footer-acoes" style="display:none;">
+                            ${botoesAcao}
+                        </div>
                     </div>
                 </div>`;
         }
@@ -186,5 +199,27 @@ async function solicitarEntrada(viagemId, tipoVaga = 'passageiro') {
     } catch (error) {
         console.error(error);
         alert("Erro ao enviar solicitação.");
+    }
+}
+
+// seleção de card PBI12 criterio de aceite 1
+function selecionarCard(card) {
+    // so funciona em cards clicáveis (não é minha carona, não já solicitado)
+    if (!card.classList.contains('card-clicavel')) return;
+
+    const jaSelecionado = card.classList.contains('card-selecionado');
+
+    // remove seleção de todos os cards
+    document.querySelectorAll('.card-viagem.card-selecionado').forEach(c => {
+        c.classList.remove('card-selecionado');
+        c.querySelector('.footer-estatico').style.display = '';
+        c.querySelector('.footer-acoes').style.display = 'none';
+    });
+
+    // se não estava selecionado, seleciona este
+    if (!jaSelecionado) {
+        card.classList.add('card-selecionado');
+        card.querySelector('.footer-estatico').style.display = 'none';
+        card.querySelector('.footer-acoes').style.display = 'flex';
     }
 }

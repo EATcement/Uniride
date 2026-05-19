@@ -222,3 +222,82 @@ button#novaViagem.button:hover {
 .nav-menu li a.btn-logout::before {
     display: none;
 }
+/* seleção de card PBI12 criterio de aceite 1*/
+.card-clicavel {
+  cursor: pointer;
+}
+
+.card-viagem.card-selecionado {
+  background: rgba(188, 0, 0, 0.166) !important;
+  border-color: #bc032e !important;
+  box-shadow: 0 0 0 2px rgba(138, 2, 2, 0.45), 0 15px 35px rgba(0, 0, 0, 0.4) !important;
+  transform: translateY(-5px);
+}
+
+.hint-selecionar {
+  font-size: 0.82rem;
+  color: #8d99ae;
+  font-style: italic;
+}
+
+.tag-minha-carona {
+  font-size: 0.85rem;
+  color: #f39c12;
+  font-weight: 600;
+}
+
+.btn-ja-solicitado {
+  background: #8d99ae;
+  color: #ffffff;
+  cursor: not-allowed;
+  padding: 0.6rem 1.2rem;
+  border: none;
+  border-radius: 8px;
+  font-size: 0.9rem;
+}
+
+/* Área de botões de ação (aparece ao selecionar) */
+.footer-acoes {
+  display: flex;
+  flex-direction: column;
+  gap: 0.6rem;
+  width: 100%;
+}
+
+.btn-acao {
+  width: 100%;
+  padding: 0.75rem 1rem;
+  border: none;
+  border-radius: 8px;
+  font-size: 0.95rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  font-family: inherit;
+}
+
+.btn-passageiro {
+  background-color: #8d99ae;
+  color: #ffffff;
+}
+
+.btn-passageiro:hover {
+  background-color: #af0029;
+  transform: translateY(-1px);
+}
+
+.btn-motorista {
+  background-color: #8d99ae;
+  color: #ffffff;
+}
+
+.btn-motorista:hover {
+  background-color: #af0029;
+  transform: translateY(-1px);
+}
+
+.btn-motorista-ocupado {
+  background-color: #2b2c44;
+  color: #8d99ae;
+  cursor: not-allowed;
+}
