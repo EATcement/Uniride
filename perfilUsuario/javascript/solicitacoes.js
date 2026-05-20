@@ -70,7 +70,11 @@ async function responderSolicitacao(idSolicitacao, novoStatus) {
         if (resultado.status === "ok") {
             carregarSolicitacoes();
         } else {
-            alert("Erro ao atualizar solicitação: " + resultado.mensagem);
+            Swal.fire({
+                icon: "error",
+                title: "Erro",
+                text: "Erro ao atualizar solicitação: " + resultado.mensagem
+            });
         }
     } catch (error) {
         console.error("Erro na requisição:", error);

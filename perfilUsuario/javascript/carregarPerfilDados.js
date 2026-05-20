@@ -97,18 +97,45 @@ document.getElementById('inputFoto').addEventListener('change', async function(e
         if (resposta.status === 'ok') {
             document.getElementById('perfilFoto').src = "../../a-fotos-usuarios/" + resposta.nome_arquivo;
             
-            alert("Foto de perfil atualizada com sucesso!");
+            await Swal.fire({
+                title: "Sucesso!",
+                text: "Foto de perfil atualizada com sucesso!",
+                icon: "success",
+                confirmButtonText: "OK",
+                confirmButtonColor: "#ff2448"
+            });
         } else {
-            alert("Erro: " + resposta.mensagem);
-        }
-    } catch (erro) {
+            await Swal.fire({
+                title: "Erro!",
+                text: resposta.mensagem,
+                icon: "error",
+                confirmButtonText: "OK",
+                confirmButtonColor: "#ff2448"
+            });
+    }
+} catch (erro) {
         console.error("Erro ao enviar foto:", erro);
-        alert("Falha na conexão ao tentar enviar a foto.");
+        await Swal.fire({
+            title: "Erro!",
+            text: "Falha na conexão ao tentar enviar a foto.",
+            icon: "error",
+            confirmButtonText: "OK",
+            confirmButtonColor: "#ff2448"
+        });
     }
 });
 
 document.getElementById('btnRemoverFoto').addEventListener('click', async () => {
-    if (!confirm("Tem certeza que deseja remover sua foto de perfil?")) return;
+    const confirmacao = await Swal.fire({
+        title: "Remover foto?",
+        text: "Tem certeza que deseja remover sua foto de perfil?",
+        icon: "warning",
+        showCancelButton: true,
+        confirmButtonText: "Sim, remover",
+        cancelButtonText: "Cancelar",
+        confirmButtonColor: "#ff2448"
+    });
+    if (!confirmacao.isConfirmed) return;
 
     try {
         const retorno = await fetch('../php/removerFoto.php', {
@@ -118,12 +145,30 @@ document.getElementById('btnRemoverFoto').addEventListener('click', async () => 
 
         if (resposta.status === 'ok') {
             document.getElementById('perfilFoto').src = "../../assets/icon-pessoa.png";
-            alert("Foto de perfil removida com sucesso!");
+            await Swal.fire({
+                title: "Sucesso!",
+                text: "Foto de perfil removida com sucesso!",
+                icon: "success",
+                confirmButtonText: "OK",
+                confirmButtonColor: "#ff2448"
+            });
         } else {
-            alert("Erro: " + resposta.mensagem);
+            await Swal.fire({
+                title: "Erro!",
+                text: resposta.mensagem,
+                icon: "error",
+                confirmButtonText: "OK",
+                confirmButtonColor: "#ff2448"
+            });
         }
     } catch (erro) {
         console.error("Erro ao remover foto:", erro);
-        alert("Falha na conexão ao tentar remover a foto.");
+        await Swal.fire({
+            title: "Erro!",
+            text: "Falha na conexão ao tentar remover a foto.",
+            icon: "error",
+            confirmButtonText: "OK",
+            confirmButtonColor: "#ff2448"
+        });
     }
 });

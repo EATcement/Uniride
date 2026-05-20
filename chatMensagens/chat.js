@@ -116,6 +116,12 @@ async function enviarMensagem() {
         input.value = '';
         await carregarMensagens();
     } else {
-        alert('Erro ao enviar mensagem.');
+        await Swal.fire({
+            title: "Erro!",
+            text: "Erro ao enviar mensagem.",
+            icon: "error",
+            confirmButtonText: "OK",
+            confirmButtonColor: "#ff2448"
+        });
     }
 }

@@ -201,7 +201,13 @@ async function carregarDados() {
 
 async function solicitarEntrada(viagemId, tipoVaga = 'passageiro') {
     if (!usuarioLogadoId) {
-        alert("Você precisa estar logado!");
+        await Swal.fire({
+            title: "Atenção!",
+            text: "Você precisa estar logado!",
+            icon: "warning",
+            confirmButtonText: "OK",
+            confirmButtonColor: "#ff2448"
+        });
         return;
     }
 
@@ -218,11 +224,23 @@ async function solicitarEntrada(viagemId, tipoVaga = 'passageiro') {
             body: JSON.stringify(dados)
         });
         const result = await response.json();
-        alert(result.mensagem);
+        await Swal.fire({
+            title: result.status === "ok" ? "Sucesso!" : "Erro!",
+            text: result.mensagem,
+            icon: result.status === "ok" ? "success" : "error",
+            confirmButtonText: "OK",
+            confirmButtonColor: "#ff2448"
+        });
         carregarDados();
     } catch (error) {
         console.error(error);
-        alert("Erro ao enviar solicitação.");
+        await Swal.fire({
+            title: "Erro!",
+            text: "Erro ao enviar solicitação.",
+            icon: "error",
+            confirmButtonText: "OK",
+            confirmButtonColor: "#ff2448"
+        });
     }
 }
 
