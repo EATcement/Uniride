@@ -224,13 +224,26 @@ async function solicitarEntrada(viagemId, tipoVaga = 'passageiro') {
             body: JSON.stringify(dados)
         });
         const result = await response.json();
-        await Swal.fire({
-            title: result.status === "ok" ? "Sucesso!" : "Erro!",
-            text: result.mensagem,
-            icon: result.status === "ok" ? "success" : "error",
-            confirmButtonText: "OK",
-            confirmButtonColor: "#ff2448"
-        });
+
+        // Se o status mapeado for o bloqueio por falta de vagas
+        if (result.status === "vagas_esgotadas") {
+            await Swal.fire({
+                title: "Não foi possível solicitar entrada",
+                text: "carona sem vagas disponíveis",
+                icon: "error",
+                confirmButtonText: "OK",
+                confirmButtonColor: "#ff2448"
+            });
+        } else {
+            // Comportamento padrão para sucesso ou outros erros cadastrados
+            await Swal.fire({
+                title: result.status === "ok" ? "Sucesso!" : "Erro!",
+                text: result.mensagem,
+                icon: result.status === "ok" ? "success" : "error",
+                confirmButtonText: "OK",
+                confirmButtonColor: "#ff2448"
+            });
+        }
         carregarDados();
     } catch (error) {
         console.error(error);
