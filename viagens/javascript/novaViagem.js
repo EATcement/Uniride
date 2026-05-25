@@ -1,4 +1,3 @@
-
 const campos = [
     { id: "titulo",       erro: "erroTitulo",       msg: "*Informe o título." },
     { id: "descricao",    erro: "erroDescricao",    msg: "*Informe a descrição." },
@@ -53,6 +52,7 @@ async function verificarMotorista() {
    
                     document.getElementById("erroPreco").style.display      = "none";
                     document.getElementById("erroCapacidade").style.display = "none";
+                    document.getElementById("erroVeiculo").style.display    = "none";
                 }
             });
         }
@@ -91,6 +91,11 @@ async function carregarVeiculos() {
             const cap = opt.getAttribute("data-capacidade");
             const campoCap = document.getElementById("capacidade");
             if (campoCap && cap) campoCap.value = cap;
+
+            // Limpa o erro de veículo ao selecionar um
+            if (this.value) {
+                document.getElementById("erroVeiculo").style.display = "none";
+            }
         });
 
     } catch (e) {
@@ -239,13 +244,15 @@ function validarCampos() {
         }
     }
 
-    // Validações exclusivas do motorista
+  
     if (tipoCarona === "motorista") {
-        const preco      = document.getElementById("preco").value.trim();
-        const capacidade = document.getElementById("capacidade").value.trim();
+        const preco          = document.getElementById("preco").value.trim();
+        const capacidade     = document.getElementById("capacidade").value.trim();
+        const veiculoSelect  = document.getElementById("veiculo_id");
 
         const erroPreco      = document.getElementById("erroPreco");
         const erroCapacidade = document.getElementById("erroCapacidade");
+        const erroVeiculo    = document.getElementById("erroVeiculo");
 
         if (!preco) {
             erroPreco.textContent   = "*Informe o preço.";
@@ -255,10 +262,30 @@ function validarCampos() {
             erroPreco.style.display = "none";
         }
 
+        // Adicionei ess etrecho pra garantir que o motorista selecione um veículo.
+        if (!veiculoSelect || !veiculoSelect.value) {
+            erroVeiculo.textContent   = "*Selecione um veículo cadastrado.";
+            erroVeiculo.style.display = "block";
+            valido = false;
+        } else {
+            erroVeiculo.style.display = "none";
+        }
+
         if (!capacidade || parseInt(capacidade) < 1) {
             erroCapacidade.textContent   = "*Informe a capacidade (mínimo 1).";
             erroCapacidade.style.display = "block";
             valido = false;
+        } else if (veiculoSelect && veiculoSelect.value) {
+            const opt        = veiculoSelect.options[veiculoSelect.selectedIndex];
+            const capVeiculo = parseInt(opt.getAttribute("data-capacidade"));
+
+            if (!isNaN(capVeiculo) && parseInt(capacidade) > capVeiculo) {
+                erroCapacidade.textContent   = `*Capacidade não pode ser maior que a do veículo selecionado (${capVeiculo} lugares).`;
+                erroCapacidade.style.display = "block";
+                valido = false;
+            } else {
+                erroCapacidade.style.display = "none";
+            }
         } else {
             erroCapacidade.style.display = "none";
         }

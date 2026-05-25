@@ -96,8 +96,6 @@ if ($pode_editar_basico) {
     $tipoRecorrencia  = $_POST['tipoRecorrencia'] ?? 'avulsa';
     $setClauses[] = 'tipoRecorrencia = ?'; $types .= 's'; $valores[] = $tipoRecorrencia;
 
-    $tipoCarona = $_POST['tipoCarona'] ?? 'passageiro';
-    $setClauses[] = 'tipoCarona = ?'; $types .= 's'; $valores[] = $tipoCarona;
 
     if ($tipoRecorrencia === 'avulsa') {
         if (empty($_POST['dataHora'])) {
@@ -119,7 +117,6 @@ if ($pode_editar_preco_capacidade) {
         }
     }
 
-    // Capacidade — valida apenas o mínimo absoluto físico (1) e o teto do veículo selecionado
     if (isset($_POST['capacidade']) && $_POST['capacidade'] !== '') {
         $capacidade = (int)$_POST['capacidade'];
 
@@ -130,7 +127,22 @@ if ($pode_editar_preco_capacidade) {
             exit;
         }
 
-        // REMOVIDO: Check 1 que bloqueava a alteração caso o grupo já contasse com mais passageiros.
+        // Check 1 — não pode ser menor que o número de ocupantes já aceitos
+        $stmtCont = $conexao->prepare("
+            SELECT COUNT(*) AS total FROM solicitacao_viagem
+            WHERE viagem_id = ? AND tipo_vaga = 'passageiro' AND status = 'aceito'
+        ");
+        $stmtCont->bind_param("i", $id_grupo);
+        $stmtCont->execute();
+        $totalPassageiros = (int)$stmtCont->get_result()->fetch_assoc()['total'];
+        $stmtCont->close();
+
+        if ($capacidade < ($totalPassageiros + 1)) {
+            $retorno['status']   = 'nok';
+            $retorno['mensagem'] = "Não é possível definir capacidade para $capacidade: já há " . ($totalPassageiros + 1) . " ocupante(s) no grupo.";;
+            echo json_encode($retorno);
+            exit;
+        }
 
         $veiculo_id_check = (!empty($_POST['veiculo_id']) && is_numeric($_POST['veiculo_id']))
             ? (int)$_POST['veiculo_id']

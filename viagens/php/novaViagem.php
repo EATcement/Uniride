@@ -1,6 +1,4 @@
 <?php
-// novaViagem.php
-// viagens/php/novaViagem.php
 
 header("Content-type: application/json; charset=utf-8");
 session_start();
@@ -12,9 +10,9 @@ $retorno = [
     'data'     => []
 ];
 
-// ── Sessão ───────────────────────────────────────────────────────────────────
+
 if (!isset($_SESSION['usuario_id'])) {
-    // Compatibilidade com a estrutura de sessão antiga ($_SESSION['usuario'][0])
+
     if (isset($_SESSION['usuario'][0])) {
         $usuario_id = (int) $_SESSION['usuario'][0]['id_usuario'];
     } else {
@@ -37,7 +35,7 @@ $preco           = isset($_POST['preco'])    ? (float)$_POST['preco']    : 0;
 $tipoCarona      = $_POST['tipoCarona']      ?? 'passageiro';
 $tipoRecorrencia = $_POST['tipoRecorrencia'] ?? 'avulsa';
 
-//Campos exclusivo do motorista
+
 $capacidade = isset($_POST['capacidade']) && $_POST['capacidade'] !== ''
               ? (int)$_POST['capacidade']
               : null;
@@ -45,6 +43,33 @@ $capacidade = isset($_POST['capacidade']) && $_POST['capacidade'] !== ''
 $veiculo_id = isset($_POST['veiculo_id']) && is_numeric($_POST['veiculo_id'])
               ? (int)$_POST['veiculo_id']
               : null;
+
+
+if ($tipoCarona === 'motorista') {
+
+    // adicionado filtro para que não se possa criar uma oferta sem selecionar um veiculo.
+    if ($veiculo_id === null) {
+        $retorno['status']   = 'nok';
+        $retorno['mensagem'] = 'Selecione um veículo para criar uma oferta de carona.';
+        echo json_encode($retorno);
+        exit;
+    }
+
+    if ($capacidade !== null) {
+        $stmtCapVeic = $conexao->prepare("SELECT capacidade FROM veiculo WHERE id = ? AND usuario_id = ?");
+        $stmtCapVeic->bind_param("ii", $veiculo_id, $usuario_id);
+        $stmtCapVeic->execute();
+        $rowCapVeic = $stmtCapVeic->get_result()->fetch_assoc();
+        $stmtCapVeic->close();
+
+        if ($rowCapVeic && $capacidade > (int)$rowCapVeic['capacidade']) {
+            $retorno['status']   = 'nok';
+            $retorno['mensagem'] = "Capacidade $capacidade excede a do veículo selecionado ({$rowCapVeic['capacidade']} lugares).";
+            echo json_encode($retorno);
+            exit;
+        }
+    }
+}
 
 
 $stmt = $conexao->prepare("
@@ -62,7 +87,6 @@ $stmt->execute();
 
 if ($stmt->affected_rows > 0) {
     $grupo_viagem_id = $stmt->insert_id;
-
 
     if ($tipoRecorrencia === 'recorrente' && !empty($_POST['dias'])) {
         $hora        = $_POST['hora']        ?? '';
