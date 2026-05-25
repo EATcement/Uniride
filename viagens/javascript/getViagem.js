@@ -47,6 +47,10 @@ document.addEventListener("DOMContentLoaded", async () => {
 
         const campoBusca = document.getElementById("buscarCarona");
         if (campoBusca) campoBusca.addEventListener("input", carregarDados);
+
+        document.querySelectorAll('input[name="filtroTipo"]').forEach(radio => {
+            radio.addEventListener("change", carregarDados);
+        });
     }
 });
 
@@ -82,6 +86,7 @@ async function carregarDados() {
 
         if (resposta.status === "ok") {
             const filtro = document.getElementById("buscarCarona").value.toLowerCase().trim();
+            const filtroTipo = document.querySelector('input[name="filtroTipo"]:checked')?.value ?? 'todos';
 
             const grupos = {};
             resposta.data.forEach(objeto => {
@@ -97,10 +102,17 @@ async function carregarDados() {
                 }
             });
 
-            const registros = Object.values(grupos).filter(objeto =>
-                objeto.pontoPartida.toLowerCase().includes(filtro) ||
-                objeto.pontoChegada.toLowerCase().includes(filtro)
-            );
+            const registros = Object.values(grupos).filter(objeto => {
+                const baterEndereco =
+                    objeto.pontoPartida.toLowerCase().includes(filtro) ||
+                    objeto.pontoChegada.toLowerCase().includes(filtro);
+
+                const baterTipo =
+                    filtroTipo === 'todos' ||
+                    objeto.tipoCarona === filtroTipo;
+
+                return baterEndereco && baterTipo;
+            });
 
             const containerErro = document.getElementById("semCaronasDisponiveis");
             if (registros.length === 0) {
