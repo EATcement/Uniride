@@ -48,7 +48,6 @@ $resultado = $stmt->get_result();
 
 $grupos = [];
 while ($linha = $resultado->fetch_assoc()) {
-    // Agrupamos estritamente pelo ID da viagem para NUNCA duplicar o card na tela
     $id_viagem = $linha['id_viagem']; 
 
     if (!isset($grupos[$id_viagem])) {
@@ -60,19 +59,17 @@ while ($linha = $resultado->fetch_assoc()) {
             "sou_dono"         => ((int)$linha['criador_id'] === $id_logado),
             "sou_motorista"    => false,
             "responsavel"      => $linha['nome_criador'],
-            "papel_responsavel"=> $criadorEhMotorista ? "Motorista" : "Organizador (Passageiro)",
+            "papel_responsavel" => "Organizador",
             "motorista"        => $criadorEhMotorista ? $linha['nome_criador'] : "Sem motorista",
-            "status_grupo"     => 'aceito', // Padrão inicial
+            "status_grupo"     => 'aceito',
             "passageiros"      => []
         ];
     }
 
-    // Se a linha atual for referente ao usuário logado, definimos o status real dele no grupo
     if ((int)$linha['membro_id'] === $id_logado) {
         $grupos[$id_viagem]["status_grupo"] = $linha['status_solicitacao'];
     }
 
-    // Alimenta a listagem de motorista e passageiros normalmente
     if ($linha['tipo_vaga'] === 'motorista') {
         $grupos[$id_viagem]["motorista"] = $linha['nome_membro'];
 
@@ -80,7 +77,6 @@ while ($linha = $resultado->fetch_assoc()) {
             $grupos[$id_viagem]["sou_motorista"] = true;
         }
     } else {
-        // Só adiciona na lista de passageiros se o membro já foi aceito (evita expor pendentes)
         if ($linha['status_solicitacao'] === 'aceito') {
             if (!in_array($linha['nome_membro'], $grupos[$id_viagem]["passageiros"])) {
                 $grupos[$id_viagem]["passageiros"][] = $linha['nome_membro'];

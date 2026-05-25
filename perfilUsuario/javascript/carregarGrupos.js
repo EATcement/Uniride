@@ -10,7 +10,6 @@ async function carregarGrupos() {
         const containerConfirmados = document.getElementById("listaGruposConfirmados");
         const containerPendentes = document.getElementById("abaSolicitacoesPendentes");
 
-        // Se os elementos não existirem no HTML, para aqui para não quebrar o resto da página
         if (!containerConfirmados && !containerPendentes) {
             console.error("Os containers não foram encontrados no HTML!");
             return;
@@ -18,11 +17,9 @@ async function carregarGrupos() {
 
         if (resposta.status !== "ok") return;
 
-        // Inicializa as variáveis com texto vazio
         let htmlConfirmados = "";
         let htmlPendentes = "";
 
-        // Se o array vier de fato vazio do banco
         if (!resposta.data || resposta.data.length === 0) {
             if (containerConfirmados) containerConfirmados.innerHTML = `<p style="color:#95a5a6; font-style:italic; text-align:center;">Você não está em nenhum grupo confirmado ainda.</p>`;
             if (containerPendentes) containerPendentes.innerHTML = `<p style="color:#95a5a6; font-style:italic; text-align:center;">Nenhuma solicitação pendente.</p>`;
@@ -91,7 +88,7 @@ async function carregarGrupos() {
                         </p>
 
                         <p style="margin:8px 0;">
-                            <strong style="color:#bdc3c7;">Motorista do Carro:</strong>
+                            <strong style="color:#bdc3c7;">Motorista do Veículo:</strong>
                             <span style="color:#3498db; font-weight:bold;">${info.motorista || 'Sem motorista'}</span>
                         </p>
 
@@ -138,7 +135,6 @@ async function carregarGrupos() {
             }
         });
 
-        // Se rodou o loop mas não gerou HTML para alguma das variáveis, coloca a mensagem padrão
         if (containerConfirmados) {
             containerConfirmados.innerHTML = htmlConfirmados || `<p style="color:#95a5a6; font-style:italic; text-align:center;">Você não está em nenhum grupo confirmado ainda.</p>`;
         }
