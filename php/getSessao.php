@@ -1,5 +1,4 @@
 <?php
-// Garante que o navegador entenda que isso é um JSON puro, sem HTML de erro no meio
 header("Content-Type: application/json; charset=utf-8");
 
 if (session_status() === PHP_SESSION_NONE) {
@@ -10,18 +9,27 @@ $retorno = [
     'logado'      => false,
     'id'          => null,
     'nome'        => '',
-    'isMotorista' => 0
+    'isMotorista' => 0,
+    'isAdmin'     => false
 ];
 
-// Verificamos se a sessão essencial do ID existe
+// ── Admin logado ───────────────────────────────────────────────────────────
+if (!empty($_SESSION['isAdmin']) && $_SESSION['isAdmin'] === true) {
+    $retorno['logado']   = true;
+    $retorno['isAdmin']  = true;
+    $retorno['id']       = (int)$_SESSION['admin_id'];
+    $retorno['nome']     = $_SESSION['admin_nome'] ?? 'Admin';
+    echo json_encode($retorno);
+    exit;
+}
+
+// ── Usuário comum logado ───────────────────────────────────────────────────
 if (isset($_SESSION['usuario_id'])) {
-    $retorno['logado'] = true;
-    $retorno['id']     = (int)$_SESSION['usuario_id'];
-    
-    // Pegando o motorista de forma segura
+    $retorno['logado']      = true;
+    $retorno['isAdmin']     = false;
+    $retorno['id']          = (int)$_SESSION['usuario_id'];
     $retorno['isMotorista'] = isset($_SESSION['motorista']) ? (int)$_SESSION['motorista'] : 0;
-    
-    // Tratamento seguro para o nome: se não achar 'usuario_nome', tenta buscar de dentro do array do usuário
+
     if (isset($_SESSION['usuario_nome'])) {
         $retorno['nome'] = $_SESSION['usuario_nome'];
     } elseif (isset($_SESSION['usuario'][0]['nome'])) {
@@ -31,7 +39,6 @@ if (isset($_SESSION['usuario_id'])) {
     }
 }
 
-// Retorna APENAS o JSON limpo, sem warnings atrapalhando
 echo json_encode($retorno);
 exit;
 ?>
