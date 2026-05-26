@@ -5,7 +5,6 @@ const campos = [
 ];
 
 document.addEventListener('DOMContentLoaded', () => {
-    // 🕒 Bloqueia visualmente datas passadas no calendário assim que a página carrega
     configurarLimiteDataVencimento();
 
     document.getElementById("enviar").addEventListener('click', async function () {
@@ -41,7 +40,6 @@ document.addEventListener('DOMContentLoaded', () => {
     });
 });
 
-// Trava o calendário para não permitir selecionar o passado por padrão
 function configurarLimiteDataVencimento() {
     const hoje = new Date();
     const ano = hoje.getFullYear();
