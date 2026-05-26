@@ -34,25 +34,25 @@
             <div class="campo">
                 <label for="titulo">Título:</label>
                 <input type="text" id="titulo" name="titulo">
-                <p id="erroTitulo" class="erro" style="display:none;"></p>
+                <p id="erroTitulo" class="erro" style="display:none; color: var(--color-accent-red);"></p>
             </div>
 
             <div class="campo">
                 <label for="descricao">Descrição:</label>
                 <input type="text" id="descricao" name="descricao">
-                <p id="erroDescricao" class="erro" style="display:none;"></p>
+                <p id="erroDescricao" class="erro" style="display:none; color: var(--color-accent-red);"></p>
             </div>
 
             <div class="campo">
                 <label for="pontoPartida">Endereço de partida:</label>
                 <input type="text" id="pontoPartida" name="pontoPartida">
-                <p id="erroPontoPartida" class="erro" style="display:none;"></p>
+                <p id="erroPontoPartida" class="erro" style="display:none; color: var(--color-accent-red);"></p>
             </div>
 
             <div class="campo">
                 <label for="pontoChegada">Endereço de chegada (Universidade):</label>
                 <input type="text" id="pontoChegada" name="pontoChegada">
-                <p id="erroPontoChegada" class="erro" style="display:none;"></p>
+                <p id="erroPontoChegada" class="erro" style="display:none; color: var(--color-accent-red);"></p>
             </div>
 
            
@@ -68,7 +68,7 @@
             <div class="campo" id="divDataHora">
                 <label for="dataHora">Data e hora:</label>
                 <input type="datetime-local" id="dataHora" name="dataHora">
-                <p id="erroDataHora" class="erro" style="display:none;"></p>
+                <p id="erroDataHora" class="erro" style="display:none; color: var(--color-accent-red);"></p>
             </div>
 
             <div id="camposRecorrencia" style="display:none;">
@@ -83,19 +83,19 @@
                         <label><input type="checkbox" name="dias[]" value="6"> Sábado</label>
                         <label><input type="checkbox" name="dias[]" value="0"> Domingo</label>
                     </div>
-                    <p id="erroDias" class="erro" style="display:none;"></p>
+                    <p id="erroDias" class="erro" style="display:none; color: var(--color-accent-red);"></p>
                 </div>
 
                 <div class="campo">
                     <label for="hora">Horário:</label>
                     <input type="time" id="hora" name="hora">
-                    <p id="erroHora" class="erro" style="display:none;"></p>
+                    <p id="erroHora" class="erro" style="display:none; color: var(--color-accent-red);"></p>
                 </div>
 
                 <div class="campo">
                     <label for="data_inicio">Data de início:</label>
                     <input type="date" id="data_inicio" name="data_inicio">
-                    <p id="erroDataInicio" class="erro" style="display:none;"></p>
+                    <p id="erroDataInicio" class="erro" style="display:none; color: var(--color-accent-red);"></p>
                 </div>
             </div>
         </section>
@@ -114,9 +114,7 @@
             <div class="campo">
                 <label for="capacidade">Capacidade máxima de passageiros:</label>
                 <input type="number" id="capacidade" name="capacidade" min="1">
-                <p id="erroCapacidade" class="erro" style="display:none;"></p>
-
-                </p>
+                <p id="erroCapacidade" class="erro" style="display:none; color: var(--color-accent-red);"></p>
             </div>
 
             <div class="campo">

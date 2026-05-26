@@ -63,16 +63,33 @@ async function alterar() {
     var categoria = document.getElementById("categoria").value;
 
     // validação básica
-    if (!placa || !marca || !modelo || !ano || !cor || !capacidade) {
-        Swal.fire({
-            title: "ERRO!",
-            text: "Por favor, preencha todos os campos obrigatórios.",
-            icon: "error",
-            confirmButtonText: "OK",
-            confirmButtonColor: "#ff2448"
-        });
-        return;
-    }
+    const CAMPOS_OBRIGATORIOS = [
+        { id: "placa",      erro: "erroPlaca",      msg: "*Informe a placa." },
+        { id: "marca",      erro: "erroMarca",      msg: "*Informe a marca." },
+        { id: "modelo",     erro: "erroModelo",     msg: "*Informe o modelo." },
+        { id: "ano",        erro: "erroAno",        msg: "*Informe o ano." },
+        { id: "cor",        erro: "erroCor",        msg: "*Informe a cor." },
+        { id: "capacidade", erro: "erroCapacidade", msg: "*Informe a capacidade." },
+        { id: "renavam",    erro: "erroRenavam",    msg: "*Informe o renavam." },
+        { id: "gastoCombustivel", erro: "erroGastoCombustivel", msg: "*Informe o gasto de combustível." },
+        { id: "categoria", erro: "erroCategoria", msg: "*Informe a categoria." },
+    ];
+
+    let temErro = false;
+    CAMPOS_OBRIGATORIOS.forEach(({ id, erro, msg }) => {
+        const campo = document.getElementById(id);
+        const erroEl = document.getElementById(erro);
+        if (!campo.value) {
+            erroEl.textContent = msg;
+            erroEl.style.display = "block";
+            temErro = true;
+        } else {
+            erroEl.textContent = "";
+            erroEl.style.display = "none";
+        }
+    });
+
+    if (temErro) return;
 
     const fd = new FormData();
     fd.append('placa', placa);
