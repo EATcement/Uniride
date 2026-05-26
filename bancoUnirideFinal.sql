@@ -175,3 +175,6 @@ ALTER TABLE grupo_viagem
 --
 ALTER TABLE usuario ADD COLUMN foto_perfil VARCHAR(255) NULL;
 INSERT INTO administrador (nome, email, senha) VALUES ('Admin', 'admin@pucpr.edu.br', 'admin123');
+
+ALTER TABLE grupo_viagem
+    ADD COLUMN statusGrupo ENUM('ativo', 'finalizado') DEFAULT 'ativo';

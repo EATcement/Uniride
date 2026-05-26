@@ -4,8 +4,9 @@ document.addEventListener("DOMContentLoaded", () => {
 
 async function carregarViagens() {
     try {
-        // perfilViagem.php está em perfilUsuario/php/
-        const response = await fetch("../php/perfilViagem.php");
+        const response = await fetch("../php/perfilViagem.php", {
+            credentials: "include"
+        });
         const resposta = await response.json();
 
         const container   = document.getElementById("listaViagem");
@@ -80,6 +81,12 @@ async function carregarViagens() {
                                        border:none; border-radius:4px; cursor:pointer; font-size:0.9rem;">
                             🗑️ Excluir
                         </button>
+
+                        <button onclick="finalizarGrupo(${reg.id})"
+                            style="background:#e67e22; color:white; padding:4px 10px;
+                                border:none; border-radius:4px; cursor:pointer; font-size:0.9rem;">
+                        ✅ Finalizar
+                        </button>
                     </div>
                 </div>`;
         });
@@ -106,7 +113,10 @@ async function excluirViagem(id) {
     if (!confirmado.isConfirmed) return;
 
     try {
-        const response = await fetch(`../php/excluirViagem.php?id=${id}`, { method: "POST" });
+        const response = await fetch(`../php/excluirViagem.php?id=${id}`, {
+            method: "POST",
+            credentials: "include"
+        });
         const resultado = await response.json();
 
         if (resultado.status === "ok") {
@@ -127,5 +137,49 @@ async function excluirViagem(id) {
         }
     } catch (e) {
         console.error("Erro ao excluir:", e);
+    }
+}
+
+async function finalizarGrupo(id) {
+    const confirmacao = await Swal.fire({
+        title: "Finalizar grupo?",
+        text: "Essa ação marcará o grupo como finalizado.",
+        icon: "warning",
+        showCancelButton: true,
+        confirmButtonText: "Sim, finalizar",
+        cancelButtonText: "Cancelar",
+        confirmButtonColor: "#e67e22"
+    });
+
+    if (!confirmacao.isConfirmed) return;
+
+    try {
+        const response = await fetch("../php/finalizarGrupo.php", {
+            method: "POST",
+            credentials: "include",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ id })
+        });
+
+        const resultado = await response.json();
+
+        if (resultado.status === "ok") {
+            Swal.fire({
+                title: "Finalizado!",
+                text: resultado.mensagem,
+                icon: "success",
+                confirmButtonColor: "#ff2448"
+            });
+            carregarViagens();
+        } else {
+            Swal.fire({
+                title: "Erro!",
+                text: resultado.mensagem,
+                icon: "error",
+                confirmButtonColor: "#ff2448"
+            });
+        }
+    } catch (e) {
+        console.error("Erro ao finalizar:", e);
     }
 }
