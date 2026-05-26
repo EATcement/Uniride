@@ -1,4 +1,4 @@
-/* ── Reset & variáveis ─────────────────────────────────────────── */
+/*padronizacao css*/
 *, *::before, *::after {
   margin: 0;
   padding: 0;
@@ -6,37 +6,49 @@
 }
 
 :root {
-  --color-primary-dark:    #2b2c44;
-  --color-secondary-gray:  #8d99ae;
-  --color-background:      #1a1b2e;
-  --color-accent-red:      #ef233e;
+  --color-primary-dark: #2b2c44;
+  --color-secondary-gray: #8d99ae;
+  --color-background: #1a1b2e; 
+  --color-accent-red: #ef233e;
   --color-accent-red-dark: #d70232;
-  --color-white:           #eef2f5;
-  --font-family: -apple-system, BlinkMacSystemFont, "SF Pro Display",
-                 "Helvetica Neue", Helvetica, Arial, sans-serif;
+  --color-white: #eef2f5;
+  
+  --font-family: -apple-system, BlinkMacSystemFont, "SF Pro Display", "SF Pro Text", "Helvetica Neue", Helvetica, Arial, sans-serif;
+  
+  --spacing-sm: 1rem;
+  --spacing-md: 1.5rem;
+  --spacing-lg: 2rem;
+  --spacing-xl: 3rem;
+  --spacing-2xl: 4rem;
+  
+  --border-radius: 0.75rem;
+  --border-radius-lg: 1rem;
+  --shadow-md: 0 4px 12px rgba(0, 0, 0, 0.3);
   --transition: all 0.3s ease;
+}
+
+html {
+  scroll-behavior: smooth;
 }
 
 body {
   font-family: var(--font-family);
   background-color: var(--color-background);
   color: var(--color-white);
-  min-height: 100vh;
+  line-height: 1.6;
+  overflow-x: hidden;
   -webkit-font-smoothing: antialiased;
-  padding-top: 90px;
+  min-height: 100vh;
 }
 
-/* ── Navbar ────────────────────────────────────────────────────── */
-nav {
+/* nav */
+nav, .navbar {
   position: fixed;
   top: 0;
   width: 100%;
-  height: 70px;
   z-index: 1000;
   background-color: var(--color-primary-dark);
-  box-shadow: 0 4px 12px rgba(0,0,0,.3);
-  display: flex;
-  align-items: center;
+  box-shadow: var(--shadow-md);
 }
 
 .navbar-container {
@@ -44,28 +56,29 @@ nav {
   align-items: center;
   justify-content: space-between;
   max-width: 1200px;
-  width: 100%;
   margin: 0 auto;
-  padding: 0 2rem;
+  padding: 1rem 2rem;
 }
 
 .logo {
   display: flex;
-  align-items: center;
+  align-items: center; 
   gap: 10px;
-  text-decoration: none;
-  font-size: 1.4rem;
+  font-size: 1.5rem;
   font-weight: 700;
   color: var(--color-white);
-  letter-spacing: .5px;
+  text-decoration: none;
 }
 
-.icone-logo { width: 36px; height: 36px; }
+.icone-logo {
+  width: 30px; 
+  height: auto;
+}
 
 .badge-admin {
   background: var(--color-accent-red);
   color: #fff;
-  font-size: .65rem;
+  font-size: 0.65rem;
   font-weight: 700;
   padding: 2px 8px;
   border-radius: 20px;
@@ -74,30 +87,38 @@ nav {
 }
 
 .nav-menu {
+  display: flex;
+  gap: 1.5rem;
   list-style: none;
+  align-items: center;
+}
+
+.nav-menu li {
   display: flex;
   align-items: center;
-  gap: 1.5rem;
 }
 
-.nav-menu li { display: flex; align-items: center; }
-
-.btn-logout {
-  background: var(--color-accent-red);
-  color: #fff;
-  padding: .45rem 1.1rem;
-  border-radius: 8px;
+.nav-menu a, .btn-logout {
+  color: var(--color-white);
   text-decoration: none;
   font-weight: 600;
-  font-size: .9rem;
   transition: var(--transition);
+  padding: 0.5rem 1rem;
+  border-radius: 50px;
+  background: transparent;
+  border: none;
+  font-size: 1rem;
+  cursor: pointer;
 }
-.btn-logout:hover { background: var(--color-accent-red-dark); }
 
-/* ── Cabeçalho da página ───────────────────────────────────────── */
+.nav-menu a:hover, .btn-logout:hover {
+  background-color: var(--color-accent-red);
+}
+
+/* cabeçalho */
 .page-header {
   max-width: 1200px;
-  margin: 2rem auto 1.5rem;
+  margin: 120px auto var(--spacing-md);
   padding: 0 2rem;
 }
 
@@ -109,37 +130,37 @@ nav {
 
 .page-header p {
   color: var(--color-secondary-gray);
-  margin-top: .35rem;
-  font-size: .95rem;
+  margin-top: 0.35rem;
+  font-size: 0.95rem;
 }
 
-/* ── Barra de busca ────────────────────────────────────────────── */
 .search-bar {
   max-width: 1200px;
-  margin: 0 auto 1.5rem;
+  margin: 0 auto var(--spacing-md);
   padding: 0 2rem;
 }
 
 .search-bar input {
   width: 100%;
   max-width: 420px;
-  padding: .65rem 1rem;
-  border-radius: 10px;
-  border: 1px solid rgba(255,255,255,.1);
+  padding: 0.65rem 1rem;
+  border-radius: var(--border-radius);
+  border: 1px solid rgba(255,255,255,0.1);
   background: var(--color-primary-dark);
   color: var(--color-white);
-  font-size: .95rem;
+  font-size: 0.95rem;
   outline: none;
   transition: var(--transition);
+  box-shadow: 0 2px 4px rgba(0,0,0,0.1);
 }
 
 .search-bar input::placeholder { color: var(--color-secondary-gray); }
 .search-bar input:focus { border-color: var(--color-accent-red); }
 
-/* ── Tabela de usuários ────────────────────────────────────────── */
+/* tabelas */
 .table-wrapper {
   max-width: 1200px;
-  margin: 0 auto 3rem;
+  margin: 0 auto var(--spacing-xl);
   padding: 0 2rem;
   overflow-x: auto;
 }
@@ -148,18 +169,19 @@ table {
   width: 100%;
   border-collapse: collapse;
   background: var(--color-primary-dark);
-  border-radius: 14px;
+  border-radius: var(--border-radius-lg);
+  box-shadow: var(--shadow-md);
   overflow: hidden;
-  font-size: .9rem;
+  font-size: 0.9rem;
 }
 
 thead {
-  background: rgba(239, 35, 62, .15);
+  background: rgba(239, 35, 62, 0.15);
   border-bottom: 2px solid var(--color-accent-red);
 }
 
 thead th {
-  padding: .9rem 1rem;
+  padding: 0.9rem 1rem;
   text-align: left;
   font-weight: 600;
   color: var(--color-white);
@@ -167,20 +189,19 @@ thead th {
 }
 
 tbody tr {
-  border-bottom: 1px solid rgba(255,255,255,.06);
-  transition: background .2s;
+  border-bottom: 1px solid rgba(255,255,255,0.06);
+  transition: background-color 0.2s ease, border-left 0.2s ease;
 }
 
 tbody tr:last-child { border-bottom: none; }
-tbody tr:hover { background: rgba(255,255,255,.04); }
+tbody tr:hover { background: rgba(255,255,255,0.04); }
 
 tbody td {
-  padding: .85rem 1rem;
+  padding: 0.85rem 1rem;
   color: var(--color-white);
   vertical-align: middle;
 }
 
-/* foto */
 .user-foto {
   width: 36px;
   height: 36px;
@@ -189,41 +210,61 @@ tbody td {
   border: 2px solid var(--color-accent-red);
 }
 
-/* badges */
 .badge {
   display: inline-block;
-  padding: .25rem .7rem;
+  padding: 0.25rem 0.7rem;
   border-radius: 20px;
-  font-size: .75rem;
+  font-size: 0.75rem;
   font-weight: 700;
-  letter-spacing: .3px;
+  letter-spacing: 0.3px;
 }
 
-.badge-motorista  { background: rgba(46,213,115,.15); color: #2ed573; }
-.badge-passageiro { background: rgba(141,153,174,.15); color: var(--color-secondary-gray); }
-.badge-ativo      { background: rgba(46,213,115,.15); color: #2ed573; }
-.badge-banido     { background: rgba(239,35,62,.15);  color: var(--color-accent-red); }
+.badge-motorista  { background: rgba(46,213,115,0.15); color: #2ed573; }
+.badge-passageiro { background: rgba(141,153,174,0.15); color: var(--color-secondary-gray); }
+.badge-ativo      { background: rgba(46,213,115,0.15); color: #2ed573; }
+.badge-banido     { background: rgba(239,35,62,0.15);  color: var(--color-accent-red); }
 
-/* estado vazio */
-.empty-state {
+.empty-state, .loading {
   text-align: center;
-  padding: 3rem;
-  color: var(--color-secondary-gray);
-}
-
-/* loading */
-.loading {
-  text-align: center;
-  padding: 3rem;
+  padding: var(--spacing-xl);
   color: var(--color-secondary-gray);
   font-size: 1rem;
 }
 
-/* contador */
 .count-label {
   max-width: 1200px;
-  margin: 0 auto .8rem;
+  margin: 0 auto 0.8rem;
   padding: 0 2rem;
   color: var(--color-secondary-gray);
-  font-size: .85rem;
+  font-size: 0.85rem;
+}
+
+/* selecao da linha */
+.btn-info-plus {
+  display: none !important; /* Escondido por padrão */
+  background: var(--color-accent-red);
+  color: white;
+  border: none;
+  border-radius: 50%;
+  width: 32px;
+  height: 32px;
+  font-size: 1.4rem;
+  cursor: pointer;
+  font-weight: bold;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 2px 6px rgba(0,0,0,0.3);
+  padding: 0;
+  line-height: 1;
+}
+
+/* Quando a linha é clicada, o botão aparece */
+tbody tr.row-selected .btn-info-plus {
+  display: inline-flex !important;
+}
+
+/* Fundo vermelho translúcido na linha selecionada */
+tbody tr.row-selected {
+  background-color: rgba(239, 35, 62, 0.15) !important;
+  border-left: 3px solid var(--color-accent-red) !important;
 }

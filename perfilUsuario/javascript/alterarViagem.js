@@ -24,11 +24,30 @@ document.addEventListener("DOMContentLoaded", async () => {
         return;
     }
     await inicializar();
+    configurarLimitesCalendario(); // TRAVA OS CALENDÁRIOS CONTRA DATAS PASSADAS
 });
+
+// FUNÇÃO PARA TRAVAR CLIQUES EM DIAS PASSADOS
+function configurarLimitesCalendario() {
+    const hoje = new Date();
+    const ano = hoje.getFullYear();
+    const mes = String(hoje.getMonth() + 1).padStart(2, '0');
+    const dia = String(hoje.getDate()).padStart(2, '0');
+    const horas = String(hoje.getHours()).padStart(2, '0');
+    const minutos = String(hoje.getMinutes()).padStart(2, '0');
+
+    const dataMinimaYMD = `${ano}-${mes}-${dia}`;
+    const dataHoraMinimaLocal = `${dataMinimaYMD}T${horas}:${minutos}`;
+
+    const campoDataHora = document.getElementById("dataHora");
+    if (campoDataHora) campoDataHora.min = dataHoraMinimaLocal;
+
+    const campoDataInicio = document.getElementById("data_inicio");
+    if (campoDataInicio) campoDataInicio.min = dataMinimaYMD;
+}
 
 async function inicializar() {
     try {
-        // getPermissaoGrupo.php está em viagens/php/
         const resPermissao   = await fetch(`../../viagens/php/getPermissaoGrupo.php?id=${idGrupo}`);
         const dadosPermissao = await resPermissao.json();
 
@@ -74,7 +93,6 @@ async function inicializar() {
 
 // PREENCHE OS CAMPOS
 async function preencherFormulario() {
-    // perfilViagem.php está em perfilUsuario/php/
     const res      = await fetch(`../php/perfilViagem.php?id=${idGrupo}`);
     const resposta = await res.json();
 
@@ -94,12 +112,20 @@ async function preencherFormulario() {
     setValorSe("tipoRecorrencia", reg.tipoRecorrencia ?? "avulsa");
 
     if (reg.dataHora) {
-        setValorSe("dataHora", reg.dataHora.replace(" ", "T").slice(0, 16));
+        const dtFormatada = reg.dataHora.replace(" ", "T").slice(0, 16);
+        setValorSe("dataHora", dtFormatada);
+        // Guarda o valor original vindo do banco para comparar na validação
+        window._dataHoraOriginal = dtFormatada;
     }
 
     if (reg.tipoRecorrencia === "recorrente") {
         setValorSe("hora",        reg.hora_recorrencia);
         setValorSe("data_inicio", reg.data_inicio);
+        
+        // Guarda os originais da recorrência
+        window._dataInicioOriginal = reg.data_inicio;
+        window._horaOriginal = reg.hora_recorrencia ? reg.hora_recorrencia.substring(0, 5) : "";
+
         await marcarDiasSemana();
         toggleRecorrencia();
     }
@@ -168,7 +194,6 @@ async function carregarVeiculos() {
     if (!select) return;
 
     try {
-        // getVeiculosMotorista.php está em viagens/php/
         const res      = await fetch("../../viagens/php/getVeiculosMotorista.php");
         const resposta = await res.json();
 
@@ -200,7 +225,7 @@ async function carregarVeiculos() {
 }
 
 
-// TOGGLE  DA RECORRÊNCIA
+// TOGGLE DA RECORRÊNCIA
 function toggleRecorrencia() {
     const tipo         = document.getElementById("tipoRecorrencia")?.value;
     const camposRec    = document.getElementById("camposRecorrencia");
@@ -218,12 +243,20 @@ function toggleRecorrencia() {
 }
 
 
-// VALIDAÇÃO
+// VALIDAÇÃO COM FILTRO ANTI-PASSADO SEGURO
 function validarFormulario() {
     let valido = true;
 
     if (permissao.podeEditarBasico) {
         const tipoRecorrencia = document.getElementById("tipoRecorrencia")?.value ?? "avulsa";
+
+        // Captura o momento do clique para a validação numérica precisa
+        const agora = new Date();
+        const anoAtual   = agora.getFullYear();
+        const mesAtual   = agora.getMonth() + 1;
+        const diaAtual   = agora.getDate();
+        const horaAtual  = agora.getHours();
+        const minAtual   = agora.getMinutes();
 
         CAMPOS_BASICOS.forEach(campo => {
             const valor  = document.getElementById(campo.id)?.value.trim();
@@ -245,7 +278,29 @@ function validarFormulario() {
                 erroDataHora.style.display = "block";
                 valido = false;
             } else {
-                erroDataHora.style.display = "none";
+                // SÓ VALIDA SE O USUÁRIO ALTEROU A DATA/HORA ORIGINAL DO BANCO
+                if (dt !== window._dataHoraOriginal) {
+                    const [dataPart, horaPart] = dt.split('T');
+                    const [anoIn, mesIn, diaIn] = dataPart.split('-').map(Number);
+                    const [horaIn, minIn] = horaPart.split(':').map(Number);
+
+                    const dataPassada = (anoIn < anoAtual) || 
+                                        (anoIn === anoAtual && mesIn < mesAtual) || 
+                                        (anoIn === anoAtual && mesIn === mesAtual && diaIn < diaAtual);
+
+                    const hojeMasHoraPassada = (anoIn === anoAtual && mesIn === mesAtual && diaIn === diaAtual) && 
+                                               ((horaIn < horaAtual) || (horaIn === horaAtual && minIn < minAtual));
+
+                    if (dataPassada || hojeMasHoraPassada) {
+                        erroDataHora.textContent   = "*A nova data e hora não podem ser anteriores ao momento atual.";
+                        erroDataHora.style.display = "block";
+                        valido = false;
+                    } else {
+                        erroDataHora.style.display = "none";
+                    }
+                } else {
+                    erroDataHora.style.display = "none";
+                }
             }
         } else {
             if (erroDataHora) erroDataHora.style.display = "none";
@@ -273,15 +328,37 @@ function validarFormulario() {
                 erroDataIni.textContent = "*Informe a data de início.";
                 erroDataIni.style.display = "block";
                 valido = false;
-            } else { erroDataIni.style.display = "none"; }
+            } else {
+                // SÓ VALIDA SE HOUVE ALTERAÇÃO NA DATA OU NA HORA DA RECORRÊNCIA
+                const horaFormatadaIn = hora ? hora.substring(0, 5) : "";
+                if (dataInicio !== window._dataInicioOriginal || horaFormatadaIn !== window._horaOriginal) {
+                    const [anoIn, mesIn, diaIn] = dataInicio.split('-').map(Number);
+                    const [horaIn, minIn] = horaFormatadaIn.split(':').map(Number);
+
+                    const dataPassada = (anoIn < anoAtual) || 
+                                        (anoIn === anoAtual && mesIn < mesAtual) || 
+                                        (anoIn === anoAtual && mesIn === mesAtual && diaIn < diaAtual);
+
+                    const hojeMasHoraPassada = (anoIn === anoAtual && mesIn === mesAtual && diaIn === diaAtual) && 
+                                               ((horaIn < horaAtual) || (horaIn === horaAtual && minIn < minAtual));
+
+                    if (dataPassada || hojeMasHoraPassada) {
+                        erroDataIni.textContent = "*A nova data de início não pode ser menor que o momento atual.";
+                        erroDataIni.style.display = "block";
+                        valido = false;
+                    } else {
+                        erroDataIni.style.display = "none";
+                    }
+                } else {
+                    erroDataIni.style.display = "none";
+                }
+            }
         }
     }
 
-    //VALIDAÇÃO DO PREÇO, CAPACIDADE E VEÍCULO
     if (permissao.podeEditarPrecoCapacidade) {
         const veiculoId = document.getElementById("veiculo_id")?.value;
         
-        // Verifica se o usuário selecionou a opção vazia "-- Selecionar veículo --"
         if (!veiculoId || veiculoId === "") {
             Swal.fire({
                 title: "Veículo obrigatório!",
@@ -293,14 +370,14 @@ function validarFormulario() {
             valido = false;
         }
 
-        const capacidade     = document.getElementById("capacidade")?.value.trim();
-        const erroCapacidade = document.getElementById("erroCapacidade");
-        if (capacidade && (isNaN(capacidade) || parseInt(capacidade) < 1)) {
-            erroCapacidade.textContent   = "*Capacidade deve ser um número maior que 0.";
-            erroCapacidade.style.display = "block";
+        const capacidadedef     = document.getElementById("capacidade")?.value.trim();
+        const erroCapacidadeDef = document.getElementById("erroCapacidade");
+        if (capacidadedef && (isNaN(capacidadedef) || parseInt(capacidadedef) < 1)) {
+            erroCapacidadeDef.textContent   = "*Capacidade deve ser um número maior que 0.";
+            erroCapacidadeDef.style.display = "block";
             valido = false;
         } else {
-            if (erroCapacidade) erroCapacidade.style.display = "none";
+            if (erroCapacidadeDef) erroCapacidadeDef.style.display = "none";
         }
     }
 
@@ -308,15 +385,29 @@ function validarFormulario() {
 }
 
 
-// SALVA ALTERAÇÕES
-
 async function salvar() {
     if (!validarFormulario()) return;
 
     const fd = new FormData();
 
+    // Captura os valores atuais da tela
+    const tipoRecorrencia = document.getElementById("tipoRecorrencia")?.value ?? "avulsa";
+    let valorDataHora = document.getElementById("dataHora")?.value;
+    let valorHora = document.getElementById("hora")?.value;
+    let valorDataInicio = document.getElementById("data_inicio")?.value;
+
+    // ESTRATÉGIA ANTI-DISABLED: Se o campo estiver desabilitado, recupera o valor original do banco
+    if (document.getElementById("dataHora")?.disabled) {
+        valorDataHora = window._dataHoraOriginal;
+    }
+    if (document.getElementById("hora")?.disabled) {
+        valorHora = window._horaOriginal;
+    }
+    if (document.getElementById("data_inicio")?.disabled) {
+        valorDataInicio = window._dataInicioOriginal;
+    }
+
     if (permissao.podeEditarBasico) {
-        const tipoRecorrencia = document.getElementById("tipoRecorrencia")?.value ?? "avulsa";
         fd.append("titulo",          document.getElementById("titulo").value);
         fd.append("descricao",       document.getElementById("descricao").value);
         fd.append("pontoPartida",    document.getElementById("pontoPartida").value);
@@ -324,13 +415,23 @@ async function salvar() {
         fd.append("tipoRecorrencia", tipoRecorrencia);
 
         if (tipoRecorrencia === "avulsa") {
-            fd.append("dataHora", document.getElementById("dataHora").value);
+            fd.append("dataHora", valorDataHora);
         } else {
             const dias = Array.from(document.querySelectorAll('input[name="dias[]"]:checked'))
                               .map(cb => cb.value);
             dias.forEach(d => fd.append("dias[]", d));
-            fd.append("hora",        document.getElementById("hora").value);
-            fd.append("data_inicio", document.getElementById("data_inicio").value);
+            fd.append("hora",        valorHora);
+            fd.append("data_inicio", valorDataInicio);
+        }
+    } else {
+        // Se ele NÃO pode editar o básico (ex: papel de motorista puro), 
+        // ainda precisamos enviar as datas originais para o PHP não zerar o banco!
+        fd.append("tipoRecorrencia", tipoRecorrencia);
+        if (tipoRecorrencia === "avulsa") {
+            fd.append("dataHora", valorDataHora);
+        } else {
+            fd.append("hora",        valorHora);
+            fd.append("data_inicio", valorDataInicio);
         }
     }
 
@@ -341,7 +442,6 @@ async function salvar() {
     }
 
     try {
-        // alterarViagem.php está em perfilUsuario/php/
         const retorno  = await fetch(`../php/alterarViagem.php?id=${idGrupo}`, {
             method: "POST",
             body: fd
@@ -380,7 +480,6 @@ async function salvar() {
 
 
 // UTILITÁRIOS
-
 function setValorSe(id, valor) {
     const el = document.getElementById(id);
     if (el && valor !== null && valor !== undefined) el.value = valor;

@@ -5,6 +5,8 @@ const campos = [
 ];
 
 document.addEventListener('DOMContentLoaded', () => {
+    configurarLimiteDataVencimento();
+
     document.getElementById("enviar").addEventListener('click', async function () {
         if (!validarCampos()) return;
         if (!validarCpf()) return;
@@ -38,8 +40,26 @@ document.addEventListener('DOMContentLoaded', () => {
     });
 });
 
+function configurarLimiteDataVencimento() {
+    const hoje = new Date();
+    const ano = hoje.getFullYear();
+    const mes = String(hoje.getMonth() + 1).padStart(2, '0');
+    const dia = String(hoje.getDate()).padStart(2, '0');
+    
+    const campoData = document.getElementById("dataVencimento");
+    if (campoData) {
+        campoData.min = `${ano}-${mes}-${dia}`;
+    }
+}
+
 function validarCampos() {
     let valido = true;
+
+    // Obtém o dia atual local para validação numérica limpa
+    const hoje = new Date();
+    const anoAtual = hoje.getFullYear();
+    const mesAtual = hoje.getMonth() + 1;
+    const diaAtual = hoje.getDate();
 
     for (const campo of campos) {
         const valor  = document.getElementById(campo.id).value.trim();
@@ -51,6 +71,27 @@ function validarCampos() {
             valido = false;
         } else {
             erroEl.style.display = "none";
+        }
+    }
+
+    // Se os campos básicos estão preenchidos, valida se a CNH está vencida hoje
+    if (valido) {
+        const dtVencimento = document.getElementById("dataVencimento").value.trim();
+        const erroVencimento = document.getElementById("erroDataVencimento");
+
+        // Quebra a string "YYYY-MM-DD" com segurança
+        const [anoIn, mesIn, diaIn] = dtVencimento.split('-').map(Number);
+
+        const estaVencido = (anoIn < anoAtual) || 
+                            (anoIn === anoAtual && mesIn < mesAtual) || 
+                            (anoIn === anoAtual && mesIn === mesAtual && diaIn < diaAtual);
+
+        if (estaVencido) {
+            erroVencimento.textContent   = "*A habilitação/documento informado está vencido.";
+            erroVencimento.style.display = "block";
+            valido = false;
+        } else {
+            erroVencimento.style.display = "none";
         }
     }
 

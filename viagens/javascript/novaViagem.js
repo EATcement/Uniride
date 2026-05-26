@@ -8,12 +8,32 @@ const campos = [
 document.addEventListener('DOMContentLoaded', () => {
     verificarMotorista();
     toggleRecorrencia(); // garante estado inicial correto
+    configurarLimitesCalendario(); // IMPEDE SELECIONAR DATAS PASSADAS VISUALMENTE
 
     document.getElementById("enviar").addEventListener('click', novo);
-
     document.getElementById("tipoRecorrencia").addEventListener('change', toggleRecorrencia);
 });
 
+// FUNÇÃO PARA BLOQUEAR DIAS PASSADOS NO CALENDÁRIO VISUALMENTE
+function configurarLimitesCalendario() {
+    const hoje = new Date();
+    const ano = hoje.getFullYear();
+    const mes = String(hoje.getMonth() + 1).padStart(2, '0');
+    const dia = String(hoje.getDate()).padStart(2, '0');
+    const horas = String(hoje.getHours()).padStart(2, '0');
+    const minutos = String(hoje.getMinutes()).padStart(2, '0');
+
+    const dataMinimaYMD = `${ano}-${mes}-${dia}`; // Formato: YYYY-MM-DD
+    const dataHoraMinimaLocal = `${dataMinimaYMD}T${horas}:${minutos}`; // Formato: YYYY-MM-DDTHH:MM
+
+    // Aplica o limite no input de data/hora avulsa
+    const campoDataHora = document.getElementById("dataHora");
+    if (campoDataHora) campoDataHora.min = dataHoraMinimaLocal;
+
+    // Aplica o limite no input de data recorrente
+    const campoDataInicio = document.getElementById("data_inicio");
+    if (campoDataInicio) campoDataInicio.min = dataMinimaYMD;
+}
 
 function toggleRecorrencia() {
     const tipo        = document.getElementById('tipoRecorrencia').value;
@@ -37,10 +57,7 @@ async function verificarMotorista() {
         const resposta = await retorno.json();
 
         if (resposta.motorista == true) {
-
             document.getElementById("OpMotorista").style.display = "block";
-
-
             await carregarVeiculos();
 
             document.getElementById("tipoCarona").addEventListener('change', function () {
@@ -49,7 +66,6 @@ async function verificarMotorista() {
                     opSection.style.display = "block";
                 } else {
                     opSection.style.display = "none";
-   
                     document.getElementById("erroPreco").style.display      = "none";
                     document.getElementById("erroCapacidade").style.display = "none";
                     document.getElementById("erroVeiculo").style.display    = "none";
@@ -60,8 +76,6 @@ async function verificarMotorista() {
         console.error("Erro ao verificar motorista:", e);
     }
 }
-
-// CARREGA VEÍCULOS DO MOTORISTA PRA PODER ESCOLHER
 
 async function carregarVeiculos() {
     const select = document.getElementById("veiculo_id");
@@ -85,14 +99,12 @@ async function carregarVeiculos() {
 
         select.innerHTML = options;
 
-        // PEGA A CAPACIDADE DO VEICULO E PREENCHE AUTOMATICAMENTE O CAMPO DE CAPACIDADE
         select.addEventListener("change", function () {
             const opt = this.options[this.selectedIndex];
             const cap = opt.getAttribute("data-capacidade");
             const campoCap = document.getElementById("capacidade");
             if (campoCap && cap) campoCap.value = cap;
 
-            // Limpa o erro de veículo ao selecionar um
             if (this.value) {
                 document.getElementById("erroVeiculo").style.display = "none";
             }
@@ -104,14 +116,11 @@ async function carregarVeiculos() {
     }
 }
 
-
 async function novo() {
     if (!validarCampos()) return;
 
     const fd = new FormData();
-
     const tipoRecorrencia = document.getElementById("tipoRecorrencia").value;
-
     const selectTipo  = document.getElementById("tipoCarona");
     const tipoCarona  = (selectTipo && document.getElementById("OpMotorista").style.display !== "none")
                         ? selectTipo.value
@@ -134,7 +143,6 @@ async function novo() {
         fd.append('data_inicio', document.getElementById('data_inicio').value);
     }
 
-    // Campos exclusivos do motorista
     if (tipoCarona === "motorista") {
         fd.append('preco',      document.getElementById("preco").value || 0);
         fd.append('capacidade', document.getElementById("capacidade").value || "");
@@ -177,7 +185,6 @@ async function novo() {
     }
 }
 
-
 function validarCampos() {
     let valido = true;
     const tipoRecorrencia = document.getElementById("tipoRecorrencia").value;
@@ -185,6 +192,8 @@ function validarCampos() {
     const tipoCarona      = (selectTipo && document.getElementById("OpMotorista").style.display !== "none")
                             ? selectTipo.value
                             : "passageiro";
+
+    const agora = new Date(); // Objeto de tempo exato de AGORA para comparar milisegundos
 
     // Campos obrigatórios básicos
     for (const campo of campos) {
@@ -207,12 +216,19 @@ function validarCampos() {
             erroDataHora.style.display = "block";
             valido = false;
         } else {
-            erroDataHora.style.display = "none";
+            // 🛑 VALIDAÇÃO DE DATA/HORA PASSADA PARA AVULSA
+            const dataInserida = new Date(dt);
+            if (dataInserida < agora) {
+                erroDataHora.textContent   = "*A data e hora não podem ser anteriores ao momento atual.";
+                erroDataHora.style.display = "block";
+                valido = false;
+            } else {
+                erroDataHora.style.display = "none";
+            }
         }
     } else {
         erroDataHora.style.display = "none";
 
-        // Valida campos de recorrência
         const dias       = document.querySelectorAll('input[name="dias[]"]:checked');
         const hora       = document.getElementById('hora').value.trim();
         const dataInicio = document.getElementById('data_inicio').value.trim();
@@ -228,6 +244,7 @@ function validarCampos() {
         } else {
             erroDias.style.display = 'none';
         }
+        
         if (!hora) {
             erroHora.textContent   = '*Informe o horário.';
             erroHora.style.display = 'block';
@@ -235,16 +252,29 @@ function validarCampos() {
         } else {
             erroHora.style.display = 'none';
         }
+        
         if (!dataInicio) {
             erroDataIni.textContent   = '*Informe a data de início.';
             erroDataIni.style.display = 'block';
             valido = false;
         } else {
-            erroDataIni.style.display = 'none';
+            // 🛑 VALIDAÇÃO DE DATA/HORA PASSADA PARA GRUPOS RECORRENTES
+            if (hora) {
+                // Junta a data de início e a hora de recorrência em uma string padrão ISO
+                const dataHoraInserida = new Date(`${dataInicio}T${hora}`);
+                if (dataHoraInserida < agora) {
+                    erroDataIni.textContent   = '*O início do grupo recorrente não pode ser menor que o momento atual.';
+                    erroDataIni.style.display = 'block';
+                    valido = false;
+                } else {
+                    erroDataIni.style.display = 'none';
+                }
+            } else {
+                erroDataIni.style.display = 'none';
+            }
         }
     }
 
-  
     if (tipoCarona === "motorista") {
         const preco          = document.getElementById("preco").value.trim();
         const capacidade     = document.getElementById("capacidade").value.trim();
@@ -262,7 +292,6 @@ function validarCampos() {
             erroPreco.style.display = "none";
         }
 
-        // Adicionei ess etrecho pra garantir que o motorista selecione um veículo.
         if (!veiculoSelect || !veiculoSelect.value) {
             erroVeiculo.textContent   = "*Selecione um veículo cadastrado.";
             erroVeiculo.style.display = "block";

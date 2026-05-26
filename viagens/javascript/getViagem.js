@@ -39,6 +39,30 @@ const diasSemana = {
     4: 'Quinta',  5: 'Sexta',   6: 'Sábado'
 };
 
+function formatarDataBR(dataBanco) {
+    if (!dataBanco || dataBanco === '-') return '-';
+    // Garante o formato ISO YYYY-MM-DD adicionando o "T00:00:00" para evitar problemas de fuso horário
+    const apenasData = dataBanco.split(' ')[0]; 
+    const dataObj = new Date(`${apenasData}T00:00:00`);
+    
+    if (isNaN(dataObj.getTime())) return dataBanco;
+    return dataObj.toLocaleDateString('pt-BR'); 
+}
+
+function formatarDataHoraBR(dataHoraBanco) {
+    if (!dataHoraBanco || dataHoraBanco === '-') return '-';
+    const dataObj = new Date(dataHoraBanco.replace(' ', 'T'));
+    
+    if (isNaN(dataObj.getTime())) return dataHoraBanco;
+
+    const dataFormatada = dataObj.toLocaleDateString('pt-BR');
+    const horaFormatada = dataObj.toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' });
+    
+    return `${dataFormatada} às ${horaFormatada}`;
+}
+
+
+
 document.addEventListener("DOMContentLoaded", async () => {
     await buscarUsuarioLogado();
 
@@ -162,16 +186,26 @@ async function carregarDados() {
                     }
                 }
 
-                let recorrenciaHtml = '';
-                if (objeto.tipoRecorrencia === 'recorrente' && objeto.dias.length > 0) {
-                    recorrenciaHtml = `
-                        <p><strong>Dias:</strong><br>${objeto.dias.map(d => diasSemana[d.dia]).join(', ')}</p>
-                        <p><strong>Horário:</strong><br>${objeto.dias[0].hora}</p>
-                        <p><strong>A partir de:</strong><br>${objeto.dias[0].data_inicio}</p>`;
-                } else {
-                    recorrenciaHtml = `<p><strong>Data e Hora:</strong><br>${objeto.dataHora ?? '-'}</p>`;
-                }
+               let recorrenciaHtml = '';
+                if (objeto.tipoRecorrencia === 'recorrente') {
+                    const primeiroDia = objeto.dias[0] || {};               
+                    const dataBruta = primeiroDia.data_inicio || objeto.data_inicio;
+                    const dataInicioFormatada = formatarDataBR(dataBruta);
+                    const horaBruta = primeiroDia.hora || objeto.hora_recorrencia || '-';
+                    const horaFormatada = horaBruta !== '-' ? horaBruta.substring(0, 5) : '-';
+                    
+                    const textoDias = objeto.dias.length > 0 
+                        ? objeto.dias.map(d => diasSemana[d.dia]).join(', ') 
+                        : 'Dias não definidos';
 
+                    recorrenciaHtml = `
+                        <p><strong>Dias:</strong><br>${textoDias}</p>
+                        <p><strong>Horário:</strong><br>${horaFormatada}</p>
+                        <p><strong>A partir de:</strong><br>${dataInicioFormatada}</p>`;
+                } else {
+                    const dataHoraFormatada = formatarDataHoraBR(objeto.dataHora);
+                    recorrenciaHtml = `<p><strong>Data e Hora:</strong><br>${dataHoraFormatada}</p>`;
+                }
                 const tipoExibido = (objeto.tipoCarona === 'motorista')
                     ? 'Oferta de carona'
                     : 'Solicitação de carona';
