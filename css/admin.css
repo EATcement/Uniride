@@ -1,6 +1,4 @@
-/* ==========================================
-   1. RESET E VARIÁVEIS (PADRÃO UNIRIDE)
-========================================== */
+/*padronizacao css*/
 *, *::before, *::after {
   margin: 0;
   padding: 0;
@@ -43,9 +41,7 @@ body {
   min-height: 100vh;
 }
 
-/* ==========================================
-   2. NAVBAR (MENU SUPERIOR)
-========================================== */
+/* nav */
 nav, .navbar {
   position: fixed;
   top: 0;
@@ -119,9 +115,7 @@ nav, .navbar {
   background-color: var(--color-accent-red);
 }
 
-/* ==========================================
-   3. CABEÇALHO E BARRA DE BUSCA DO ADMIN
-========================================== */
+/* cabeçalho */
 .page-header {
   max-width: 1200px;
   margin: 120px auto var(--spacing-md);
@@ -163,9 +157,7 @@ nav, .navbar {
 .search-bar input::placeholder { color: var(--color-secondary-gray); }
 .search-bar input:focus { border-color: var(--color-accent-red); }
 
-/* ==========================================
-   4. TABELA E ELEMENTOS INTERNOS
-========================================== */
+/* tabelas */
 .table-wrapper {
   max-width: 1200px;
   margin: 0 auto var(--spacing-xl);
@@ -247,9 +239,7 @@ tbody td {
   font-size: 0.85rem;
 }
 
-/* ==========================================
-   5. MECÂNICA DA LINHA SELECIONADA E BOTÃO +
-========================================== */
+/* selecao da linha */
 .btn-info-plus {
   display: none !important; /* Escondido por padrão */
   background: var(--color-accent-red);
