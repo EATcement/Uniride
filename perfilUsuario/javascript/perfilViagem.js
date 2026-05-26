@@ -2,6 +2,27 @@ document.addEventListener("DOMContentLoaded", () => {
     carregarViagens();
 });
 
+function formatarDataBR(dataBanco) {
+    if (!dataBanco || dataBanco === '-') return '-';
+    const apenasData = dataBanco.split(' ')[0]; 
+    const dataObj = new Date(`${apenasData}T00:00:00`);
+    
+    if (isNaN(dataObj.getTime())) return dataBanco;
+    return dataObj.toLocaleDateString('pt-BR'); 
+}
+
+function formatarDataHoraBR(dataHoraBanco) {
+    if (!dataHoraBanco || dataHoraBanco === '-') return '-';
+    const dataObj = new Date(dataHoraBanco.replace(' ', 'T'));
+    
+    if (isNaN(dataObj.getTime())) return dataHoraBanco;
+
+    const dataFormatada = dataObj.toLocaleDateString('pt-BR');
+    const horaFormatada = dataObj.toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' });
+    
+    return `${dataFormatada} às ${horaFormatada}`;
+}
+
 async function carregarViagens() {
     try {
         // perfilViagem.php está em perfilUsuario/php/
@@ -44,15 +65,28 @@ async function carregarViagens() {
         let html = '';
 
         Object.values(grupos).forEach(reg => {
-            // Recorrência
             let recorrenciaHtml = '';
-            if (reg.tipoRecorrencia === 'recorrente' && reg.dias.length > 0) {
+            if (reg.tipoRecorrencia === 'recorrente') {
+                const primeiroDia = reg.dias[0] || {};
+                
+                const dataBruta = primeiroDia.data_inicio || reg.data_inicio;
+                const dataInicioFormatada = formatarDataBR(dataBruta);
+                
+                const horaBruta = primeiroDia.hora || reg.hora_recorrencia || '-';
+                const horaFormatada = horaBruta !== '-' ? horaBruta.substring(0, 5) : '-';
+                
+                const textoDias = reg.dias.length > 0 
+                    ? reg.dias.map(d => diasSemana[d.dia]).join(', ') 
+                    : 'Dias não definidos';
+
                 recorrenciaHtml = `
-                    <p><strong>Dias:</strong> ${reg.dias.map(d => diasSemana[d.dia]).join(', ')}</p>
-                    <p><strong>Horário:</strong> ${reg.dias[0].hora}</p>
-                    <p><strong>A partir de:</strong> ${reg.dias[0].data_inicio}</p>`;
+                    <p><strong>Dias:</strong> ${textoDias}</p>
+                    <p><strong>Horário:</strong> ${horaFormatada}</p>
+                    <p><strong>A partir de:</strong> ${dataInicioFormatada}</p>`;
             } else {
-                recorrenciaHtml = `<p><strong>Data e Hora:</strong> ${reg.dataHora ?? '-'}</p>`;
+                // Formata a carona avulsa usando a função correspondente
+                const dataHoraFormatada = formatarDataHoraBR(reg.dataHora);
+                recorrenciaHtml = `<p><strong>Data e Hora:</strong> ${dataHoraFormatada}</p>`;
             }
 
             const tipoExibido = (reg.tipoCarona === 'motorista')

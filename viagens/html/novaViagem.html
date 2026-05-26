@@ -8,7 +8,6 @@
 </head>
 <body>
 
-    <!-- Navbar -->
     <nav>
         <div class="navbar-container">
             <a href="#" class="logo">
@@ -20,7 +19,6 @@
         </div>
     </nav>
 
-    <!-- Formulário de Cadastro de Viagem -->
     <div class="form-container">
 
         <div class="campo">
@@ -55,14 +53,12 @@
             </select>
         </div>
 
-        <!-- Data e hora — visível apenas para viagens avulsas -->
         <div class="campo" id="divDataHora">
             <label for="dataHora">Data e hora:</label>
             <input type="datetime-local" id="dataHora" name="dataHora">
             <p id="erroDataHora" class="erro" style="display:none;"></p>
         </div>
 
-        <!-- Campos de recorrência — visíveis apenas quando recorrente -->
         <div id="camposRecorrencia" style="display:none;">
             <div class="campo">
                 <label>Dias da semana:</label>
@@ -83,6 +79,8 @@
                 <input type="time" id="hora" name="hora">
                 <p id="erroHora" class="erro" style="display:none;"></p>
             </div>
+        
+
 
             <div class="campo">
                 <label for="data_inicio">Data de início:</label>
@@ -91,7 +89,6 @@
             </div>
         </div>
 
-        <!-- ── Seção motorista: aparece só quando o usuário é motorista ── -->
         <div id="OpMotorista" style="display:none;">
 
             <div class="campo">
@@ -102,7 +99,6 @@
                 </select>
             </div>
 
-            <!-- Campos que aparecem só quando seleciona "motorista" -->
             <div id="OpPrecoCapacidade" style="display:none;">
 
                 <div class="campo">
