@@ -6,7 +6,7 @@ async function verificarAdmin() {
         const sessao = await res.json();
 
         if (!sessao.logado || !sessao.isAdmin) {
-            window.location.href = "../login/login.html";
+            window.location.href = "../home/index.html";
             return;
         }
 
@@ -16,7 +16,7 @@ async function verificarAdmin() {
         await carregarUsuarios();
     } catch (e) {
         console.error("Erro:", e);
-        window.location.href = "../login/login.html";
+        window.location.href = "../home/index.html";
     }
 }
 
