@@ -14,9 +14,10 @@ if (!isset($_SESSION['usuario_id'])) {
 
 $id_logado = (int) $_SESSION['usuario_id'];
 
-// Mudamos para LEFT JOIN em u_passageiro para listar o grupo mesmo se não houver solicitações aprovadas ainda
+// ADICIONADO: vi.id AS id_instancia para capturar o ID dinâmico da tabela viagem_instancia
 $sql = "SELECT
             v.id AS id_viagem,
+            vi.id AS id_instancia, 
             v.titulo AS titulo_viagem,
             v.usuario_id AS criador_id,
             v.statusGrupo,
@@ -30,6 +31,7 @@ $sql = "SELECT
         JOIN usuario u_criador ON v.usuario_id = u_criador.id_usuario
         LEFT JOIN solicitacao_viagem s ON s.viagem_id = v.id
         LEFT JOIN usuario u_passageiro ON s.passageiro_id = u_passageiro.id_usuario
+        LEFT JOIN viagem_instancia vi ON vi.viagem_id = v.id -- MODIFICAÇÃO: Traz a instância se houver
         WHERE v.id IN (
             SELECT DISTINCT v2.id
             FROM grupo_viagem v2
@@ -51,26 +53,29 @@ while ($linha = $resultado->fetch_assoc()) {
     if (!isset($grupos[$id_viagem])) {
         $criadorEhMotorista = ($linha['tipoCarona'] === 'motorista');
 
+        // MODIFICAÇÃO REGRA DO ID: Se o grupo estiver finalizado, mandamos o id_instancia.
+        // Isso evita que você tenha que alterar a linha 57 do seu JavaScript!
+        $id_final = ($linha['statusGrupo'] === 'finalizado') ? (int)$linha['id_instancia'] : (int)$linha['id_viagem'];
+
         $grupos[$id_viagem] = [
-            "id"                => $linha['id_viagem'],
+            "id"                => $id_final, 
+            "id_original_grupo" => $linha['id_viagem'], // Mantemos guardado caso precise no futuro
             "titulo"            => $linha['titulo_viagem'],
-            "statusGrupo"       => $linha['statusGrupo'], // Mantido padrão banco
+            "statusGrupo"       => $linha['statusGrupo'], 
             "sou_dono"          => ((int)$linha['criador_id'] === $id_logado),
             "sou_motorista"     => false,
             "responsavel"       => $linha['nome_criador'],
             "papel_responsavel" => "Organizador",
             "motorista"         => $criadorEhMotorista ? $linha['nome_criador'] : "Sem motorista",
-            "status_grupo"      => 'aceito', // Valor padrão para controle do dono
+            "status_grupo"      => 'aceito', 
             "passageiros"       => [],
         ];
     }
 
-    // Se a linha atual for a solicitação do usuário logado, atualiza o status que ele vê
     if ($linha['membro_id'] !== null && (int)$linha['membro_id'] === $id_logado) {
         $grupos[$id_viagem]["status_grupo"] = $linha['status_solicitacao'];
     }
 
-    // Processa os membros vinculados se existirem
     if ($linha['membro_id'] !== null) {
         if ($linha['tipo_vaga'] === 'motorista' && $linha['status_solicitacao'] === 'aceito') {
             $grupos[$id_viagem]["motorista"] = $linha['nome_membro'];

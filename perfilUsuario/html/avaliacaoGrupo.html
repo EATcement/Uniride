@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="../../css/perfil.css">
+    <title>UniRide - Avaliar Carona</title>
+</head>
+<body>
+    <nav>
+        <div class="navbar-container">
+            <a href="#" class="logo"><img src="../../assets/icon-fofo.png" alt="Ícone UniRide" class="icone-logo">UniRide</a>
+            <ul class="nav-menu">
+                <li><a href="../../viagens/html/index.html"><img src="../../assets/icon-carona.png" alt="Ícone Carro" class="icone-carro">Caronas</a></li>
+                <li><a href="../../php/logout.php">Logout</a></li>
+            </ul>
+        </div>
+    </nav>
+
+    <div class="perfil-info-container" style="max-width: 600px; margin: 40px auto;">
+        <div class="perfil-cabecalho" style="border-bottom: 1px solid rgba(255, 255, 255, 0.1); padding-bottom: 20px; margin-bottom: 25px;">
+            <div class="avatar-container">
+                <img src="../../assets/icon-fofo.png" alt="Avaliação" class="foto-perfil" style="border: 3px solid #e67e22; object-fit: contain; padding: 5px;">
+            </div>
+            
+            <div class="perfil-titulos">
+                <h2>Avaliar Carona Finalizada</h2>
+                <p class="perfil-status" id="nomeGrupoAvaliacao" style="color: #3498db;">Carregando dados da viagem...</p>
+            </div>
+        </div>
+
+        <form id="formAvaliacao" onsubmit="enviarAvaliacao(event)" novalidate>
+            <input type="hidden" id="viagem_instancia_id" name="viagem_instancia_id">
+
+            <div class="perfil-dados-grid" style="display: flex; flex-direction: column; gap: 20px;">
+                
+                <div class="dado-item" style="flex-direction: column; align-items: flex-start; gap: 8px;">
+                    <span class="dado-label">Nesta viagem, você participou como:</span>
+                    <select id="tipo_vaga" name="tipo_vaga" required
+                            style="width: 100%; padding: 12px; background: #1a242f; color: var(--color-white); border: 1px solid rgba(255,255,255,0.1); border-radius: 6px; font-size: 1rem; outline: none;">
+                        <option value="">Selecione o seu papel...</option>
+                        <option value="motorista">Motorista (Ofereci a carona)</option>
+                        <option value="passageiro">Passageiro (Peguei a carona)</option>
+                    </select>
+                </div>
+
+                <div class="dado-item" style="flex-direction: column; align-items: flex-start; gap: 8px;">
+                    <span class="dado-label">Sua nota para o grupo/viagem:</span>
+                    <select id="nota" name="nota" required
+                            style="width: 100%; padding: 12px; background: #1a242f; color: var(--color-white); border: 1px solid rgba(255,255,255,0.1); border-radius: 6px; font-size: 1rem; outline: none;">
+                        <option value="">Escolha uma nota de 1 a 5...</option>
+                        <option value="5">⭐⭐⭐⭐⭐ 5 - Excelente</option>
+                        <option value="4">⭐⭐⭐⭐ 4 - Muito Boa</option>
+                        <option value="3">⭐⭐⭐ 3 - Regular</option>
+                        <option value="2">⭐⭐ 2 - Ruim</option>
+                        <option value="1">⭐ 1 - Péssima</option>
+                    </select>
+                </div>
+
+                <div class="dado-item" style="flex-direction: column; align-items: flex-start; gap: 8px;">
+                    <span class="dado-label">Comentário / Feedback Geral:</span>
+                    <textarea id="comentario" name="comentario" placeholder="Conte como foi a experiência com a viagem no geral..." rows="4" 
+                              style="width: 100%; padding: 12px; background: #1a242f; color: var(--color-white); border: 1px solid rgba(255,255,255,0.1); border-radius: 6px; font-size: 1rem; resize: none; font-family: sans-serif; outline: none; box-sizing: border-box;"></textarea>
+                </div>
+
+            </div>
+
+            <div style="margin-top: 30px; display: flex; flex-direction: column; gap: 15px; align-items: center;">
+                <button type="submit" id="btnEnviarAvaliacao" class="button" style="width: 100%; padding: 12px; font-size: 1rem; font-weight: bold; cursor: pointer;">
+                    Enviar Avaliação
+                </button>
+                <a href="perfil.html" style="color: #95a5a6; text-decoration: none; font-size: 0.9rem; transition: color 0.2s;" onmouseover="this.style.color='#fff'" onmouseout="this.style.color='#95a5a6'">
+                    Voltar ao perfil
+                </a>
+            </div>
+        </form>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <script src="../javascript/avaliacaoGrupo.js"></script>
+</body>
+</html>

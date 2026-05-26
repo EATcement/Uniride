@@ -3,7 +3,15 @@ document.addEventListener("DOMContentLoaded", () => {
     carregarViagens();
 });
 
-// ── 1. CARREGAR GRUPOS (Abas: Confirmados, Pendentes e Finalizados) ──
+function formatarDataBR(dataIso) {
+    if (!dataIso || dataIso === '-') return '-';
+    const apenasData = dataIso.split(' ')[0]; 
+    if (!apenasData.includes('-')) return dataIso;
+
+    const [ano, mes, dia] = apenasData.split('-');
+    return `${dia}/${mes}/${ano}`;
+}
+
 async function carregarGrupos() {
     try {
         const response = await fetch("../php/getGruposConfirmados.php", {
@@ -36,7 +44,6 @@ async function carregarGrupos() {
         resposta.data.forEach(info => {
             const titulo = info.titulo || "Sem título";
 
-            // ── STATUS FINALIZADO ──
             if (info.statusGrupo === 'finalizado') {
                 htmlFinalizados += `
                     <div style="background:#1a242f; border:1px solid rgba(255,255,255,0.05); padding:15px;
@@ -53,31 +60,23 @@ async function carregarGrupos() {
                             <strong style="color:#bdc3c7;">Motorista:</strong>
                             <span style="color:#bdc3c7;">${info.motorista || 'Sem motorista'}</span>
                         </p>
-                        <div style="margin-top:15px; display:flex; justify-content:center;">
-                            <a href="avaliarViagem.html?id=${info.id}"
-                               style="background:#f1c40f; color:#1a242f; padding:6px 14px;
-                                      border-radius:4px; text-decoration:none; font-size:0.9rem;
-                                      font-weight:bold; display:inline-flex; align-items:center; gap:5px;
-                                      transition: background 0.2s;"
-                               onmouseover="this.style.background='#f39c12'"
-                               onmouseout="this.style.background='#f1c40f'">
+                        
+                        <div style="margin-top:15px; display:flex; justify-content:center; gap:10px;">
+                            <a href="../html/avaliacaoGrupo.html?id=${info.id}"
+                                style="background:#f1c40f; color:#1a242f; padding:6px 14px;
+                                    border-radius:4px; text-decoration:none; font-size:0.9rem;
+                                    font-weight:bold; display:inline-flex; align-items:center; gap:5px;
+                                    transition: background 0.2s;"
+                            onmouseover="this.style.background='#f39c12'"
+                            onmouseout="this.style.background='#f1c40f'">
                                 ⭐ Avaliar Carona
                             </a>
-
-                            <button onclick="excluirViagem(${info.id})"
-                                    style="background:#dc3545; color:white; padding:6px 14px;
-                                           border:none; border-radius:4px; cursor:pointer; font-size:0.9rem;
-                                           display:inline-flex; align-items:center; gap:5px; font-weight:bold;">
-                                🗑️ Excluir
-                            </button>
                         </div>
                     </div>`;
-                return; 
             }
 
             if (info.statusGrupo !== 'active' && info.statusGrupo !== 'ativo') return;
 
-            // ── ATIVO + ACEITO (Confirmados) ──
             if (info.status_grupo === 'aceito') {
                 let listaPassageirosHTML = "";
 
@@ -154,7 +153,6 @@ async function carregarGrupos() {
                         </div>
                     </div>`;
 
-            // ── ATIVO + PENDENTE ──
             } else if (info.status_grupo === 'pendente') {
                 htmlPendentes += `
                     <div style="background:#1a242f; border:1px solid rgba(255,255,255,0.05); padding:15px;
@@ -186,7 +184,6 @@ async function carregarGrupos() {
     }
 }
 
-// ── 2. REMOVER MEMBRO DO GRUPO ──
 async function removerMembro(nomePassageiro, tituloViagem) {
     const confirmacao = await Swal.fire({
         title: "Remover passageiro?",
@@ -233,7 +230,24 @@ async function removerMembro(nomePassageiro, tituloViagem) {
     }
 }
 
-// ── 3. CARREGAR VIAGENS (Aba: Grupos cadastrados por você) ──
+function formatarDataHoraBR(dataHoraIso) {
+    if (!dataHoraIso || dataHoraIso === '-') return '-';
+    
+    if (!dataHoraIso.includes(' ')) {
+        return formatarDataBR(dataHoraIso); 
+    }
+
+    const [dataParte, horaParte] = dataHoraIso.split(' ');
+
+    const [ano, mes, dia] = dataParte.split('-');
+    const dataFormatada = `${dia}/${mes}/${ano}`;
+
+    const [hora, minuto] = horaParte.split(':');
+    const horaFormatada = `${hora}:${minuto}`;
+
+    return `${dataFormatada} às ${horaFormatada}`;
+}
+
 async function carregarViagens() {
     try {
         const response = await fetch("../php/perfilViagem.php", {
@@ -275,19 +289,23 @@ async function carregarViagens() {
         let temGrupoAtivo = false;
 
         Object.values(grupos).forEach(reg => {
-            // Se o grupo estiver finalizado, ele NÃO entra nesta lista
             if (reg.statusGrupo === 'finalizado') return;
 
             temGrupoAtivo = true;
 
             let recorrenciaHtml = '';
             if (reg.tipoRecorrencia === 'recorrente' && reg.dias.length > 0) {
+                const dataFormatada = formatarDataBR(reg.dias[0].data_inicio);
+
+                const horaRecorrente = reg.dias[0].hora ? reg.dias[0].hora.slice(0, 5) : '-';
+
                 recorrenciaHtml = `
                     <p><strong>Dias:</strong> ${reg.dias.map(d => diasSemana[d.dia]).join(', ')}</p>
-                    <p><strong>Horário:</strong> ${reg.dias[0].hora}</p>
-                    <p><strong>A partir de:</strong> ${reg.dias[0].data_inicio}</p>`;
+                    <p><strong>Horário:</strong> ${horaRecorrente}</p>
+                    <p><strong>A partir de:</strong> ${dataFormatada}</p>`;
             } else {
-                recorrenciaHtml = `<p><strong>Data e Hora:</strong> ${reg.dataHora ?? '-'}</p>`;
+                const dataHoraFormatada = formatarDataHoraBR(reg.dataHora);
+                recorrenciaHtml = `<p><strong>Data e Hora:</strong> ${dataHoraFormatada}</p>`;
             }
 
             const tipoExibido = (reg.tipoCarona === 'motorista') ? 'Oferta de carona' : 'Solicitação de carona';
@@ -335,7 +353,6 @@ async function carregarViagens() {
     }
 }
 
-// ── 4. EXCLUIR VIAGEM TOTALMENTE ──
 async function excluirViagem(id) {
     const confirmado = await Swal.fire({
         title: "Tem certeza?",
@@ -365,7 +382,7 @@ async function excluirViagem(id) {
                 confirmButtonColor: "#ff2448"
             });
             carregarViagens();
-            carregarGrupos(); // Atualiza também os grupos caso mude algo global
+            carregarGrupos();
         } else {
             Swal.fire({
                 title: "Erro!",
@@ -379,7 +396,6 @@ async function excluirViagem(id) {
     }
 }
 
-// ── 5. FINALIZAR GRUPO (Muda status para 'finalizado') ──
 async function finalizarGrupo(id) {
     const confirmacao = await Swal.fire({
         title: "Finalizar grupo?",
@@ -404,15 +420,19 @@ async function finalizarGrupo(id) {
         const resultado = await response.json();
 
         if (resultado.status === "ok") {
-            Swal.fire({
+            // Alerta limpo e direto, sem forçar avaliação
+            await Swal.fire({
                 title: "Finalizado!",
-                text: resultado.mensagem,
+                text: "Grupo concluído com sucesso.",
                 icon: "success",
-                confirmButtonColor: "#ff2448"
+                confirmButtonColor: "#2a3b4c",
+                confirmButtonText: "OK"
             });
-            // Recarrega ambas as abas para mover dinamicamente o card
+            
+            // Em vez de redirecionar para a avaliação, atualiza os dados na tela atual
             carregarViagens();
             carregarGrupos();
+            
         } else {
             Swal.fire({
                 title: "Erro!",

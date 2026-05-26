@@ -21,6 +21,7 @@ $id_logado = isset($_SESSION['usuario_id']) ? (int)$_SESSION['usuario_id'] : 0;
 if (isset($_GET['id'])) {
     $id = $_GET['id'];
     
+    // ADICIONADO: v.statusGrupo != 'finalizado' na query por ID
     $sql = "SELECT v.*, 
                    vr.id AS recorrencia_id,
                    vr.dia_semana,
@@ -32,11 +33,12 @@ if (isset($_GET['id'])) {
                     WHERE sv.viagem_id = v.id AND sv.passageiro_id = ? AND sv.status IN ('aceito', 'pendente')) as ja_participa
             FROM grupo_viagem v
             LEFT JOIN viagem_recorrencia vr ON vr.viagem_id = v.id
-            WHERE v.id = ?";
+            WHERE v.id = ? AND v.statusGrupo != 'finalizado'";
             
     $stmt = $conexao->prepare($sql);
     $stmt->bind_param("ii", $id_logado, $id);
 } else {
+    // ADICIONADO: WHERE v.statusGrupo != 'finalizado' na listagem geral da Home
     $sql = "SELECT v.*, 
                    vr.id AS recorrencia_id,
                    vr.dia_semana,
@@ -48,6 +50,7 @@ if (isset($_GET['id'])) {
                     WHERE sv.viagem_id = v.id AND sv.passageiro_id = ? AND sv.status IN ('aceito', 'pendente')) as ja_participa
             FROM grupo_viagem v
             LEFT JOIN viagem_recorrencia vr ON vr.viagem_id = v.id
+            WHERE v.statusGrupo != 'finalizado'
             ORDER BY v.id, vr.dia_semana";
             
     $stmt = $conexao->prepare($sql);
