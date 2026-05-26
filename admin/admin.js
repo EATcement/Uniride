@@ -1,4 +1,4 @@
- let todosUsuarios = [];
+let todosUsuarios = [];
 
 async function verificarAdmin() {
     try {
@@ -60,8 +60,9 @@ function renderizarTabela(usuarios) {
     usuarios.forEach(u => {
         const tr = document.createElement("tr");
         tr.style.cursor = "pointer";
+        tr.style.transition = "background-color 0.2s ease";
         
-        // Clicar na linha seleciona o usuário (pinta de vermelho)
+        // Configura o clique para selecionar a linha
         tr.onclick = () => selecionarUsuario(tr);
 
         const fotoSrc = (u.foto_perfil && u.foto_perfil !== "null" && u.foto_perfil !== "")
@@ -80,6 +81,7 @@ function renderizarTabela(usuarios) {
             ? `<span class="badge badge-banido">Banido</span>`
             : `<span class="badge badge-ativo">Ativo</span>`;
 
+        // botao
         tr.innerHTML = `
             <td><img src="${fotoSrc}" alt="Foto" class="user-foto" onerror="this.src='../assets/icon-pessoa.png'"></td>
             <td>${escapeHTML(u.nome)}</td>
@@ -87,21 +89,37 @@ function renderizarTabela(usuarios) {
             <td>${nascimento}</td>
             <td>${tipoHTML}</td>
             <td>${statusHTML}</td>
-            <td style="text-align: center; vertical-align: middle;">
-                <button class="btn-info-plus" onclick="event.stopPropagation(); abrirCardUsuario(${u.id_usuario || u.id})">+</button>
+            <td style="text-align: center; vertical-align: middle; width: 60px;">
+                <button class="btn-info-plus" 
+                        style="display: none; background-color: #ef233e; color: white; border: none; border-radius: 50%; width: 32px; height: 32px; font-size: 1.3rem; cursor: pointer; font-weight: bold; align-items: center; justify-content: center; box-shadow: 0 2px 6px rgba(0,0,0,0.3); padding: 0; line-height: 1;" 
+                        onclick="event.stopPropagation(); abrirCardUsuario(${u.id_usuario || u.id})">+</button>
             </td>
         `;
         tbody.appendChild(tr);
     });
 }
 
+// selecionar usuario
 function selecionarUsuario(linhaClicada) {
-    // Tira a classe 'row-selected' de todas as linhas
+
     const todasLinhas = document.querySelectorAll("#corpoTabela tr");
-    todasLinhas.forEach(tr => tr.classList.remove("row-selected"));
+    todasLinhas.forEach(tr => {
+        tr.style.setProperty("background-color", "", "important");
+        tr.style.setProperty("border-left", "none", "important");
+        
+        const btn = tr.querySelector(".btn-info-plus");
+        if (btn) {
+            btn.style.setProperty("display", "none", "important");
+        }
+    });
     
-    // Adiciona a classe na linha clicada
-    linhaClicada.classList.add("row-selected");
+    linhaClicada.style.setProperty("background-color", "rgba(239, 35, 62, 0.15)", "important");
+    linhaClicada.style.setProperty("border-left", "4px solid #ef233e", "important");
+    
+    const btnAtivo = linhaClicada.querySelector(".btn-info-plus");
+    if (btnAtivo) {
+        btnAtivo.style.setProperty("display", "inline-flex", "important");
+    }
 }
 
 document.getElementById("buscarUsuario").addEventListener("input", function () {
@@ -117,10 +135,7 @@ function escapeHTML(str) {
     return String(str).replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/"/g, "&quot;");
 }
 
-/* ================================================================ */
-/* ----- FUNÇÕES DO MODAL (CARONAS E PARTICIPANTES) --------------- */
-/* ================================================================ */
-
+// modal
 async function abrirCardUsuario(usuarioId) {
     const modal = document.getElementById("modalUsuario");
     const loading = document.getElementById("loadingModal");
