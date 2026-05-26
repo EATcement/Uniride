@@ -63,6 +63,13 @@ async function carregarGrupos() {
                                onmouseout="this.style.background='#f1c40f'">
                                 ⭐ Avaliar Carona
                             </a>
+
+                            <button onclick="excluirViagem(${info.id})"
+                                    style="background:#dc3545; color:white; padding:6px 14px;
+                                           border:none; border-radius:4px; cursor:pointer; font-size:0.9rem;
+                                           display:inline-flex; align-items:center; gap:5px; font-weight:bold;">
+                                🗑️ Excluir
+                            </button>
                         </div>
                     </div>`;
                 return; 
