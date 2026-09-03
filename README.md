@@ -238,8 +238,14 @@ Durante o desenvolvimento deste projeto foi possível aprofundar conhecimentos e
 - Organização de um projeto em módulos por funcionalidade (cadastro, viagens, perfil, chat, admin);
 - Trabalho em equipe em um projeto de longa duração, com documentação formal e alinhamento contínuo com os requisitos do cliente.
 
----
+
 
 ## 📄 Licença
 
 Este projeto foi desenvolvido para fins acadêmicos, na disciplina de Experiência Criativa do curso de Engenharia de Software da PUCPR.
+
+---
+
+## 🤖 Uso de inteligência artificial
+
+O uso de inteligência artificial foi realizado para auxiliar no desenvolvimento do projeto. Muitas vezes construindo código, documentação ou replicação de código já existente para poupar trabalho manual. Os códigos produzidos foram revisados e analisados pelos membros, validando sua qualidade. Os principais modelos de inteligência artificial utilizados foram: Claude AI e Chat GPT.
